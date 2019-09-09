@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="{{ url_for('static', filename='images_app/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Nevermore</title>
+</head>
+<body>
+    {% block conteudo %}
+    {% endblock %}
+    <footer>
+        <div class="row mx-0 bg-pri text-white">
+            <div class="col-sm-12 col-lg-6 text-center footer-copyright">
+                <br><strong><p>&reg;Copyright 2019. Todos direitos reservados.</p></strong>
+            </div>
+            <div class="col-sm-12 col-lg-6 text-right small pr-4">
+                <strong>
+                    <p>Desenvolvedores:
+                        <br><a href="http://lattes.cnpq.br/2683321092521435" target="blank">Leandro Gomes</a>: leandronascimento@cc.ci.ufpb.br
+                        <br><a href="http://lattes.cnpq.br/5516398050336349" target="blank">Victor Koehler</a>: koehlervictor@cc.ci.ufpb.br
+                    </p>
+                </strong>
+            </div>
+        </div>
+    </footer>
+    <script type="text/javascript" defer="defer" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script type="text/javascript" defer="defer" src="{{ url_for('static', filename='js/popper.js') }}"></script>
+    <script type="text/javascript" defer="defer" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+</html>
