@@ -1,4 +1,3 @@
-from flask import g
 try:
     from base import Base, Stub
 except:
