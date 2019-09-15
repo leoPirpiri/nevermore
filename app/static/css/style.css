@@ -82,3 +82,18 @@ body {
 .flip-card {
   margin-bottom: 15px;
 }
+
+.badge-gothic {
+    color: #fff;
+    background-color: #210054;
+}
+.pic-thumbnail {
+    align: center;
+    max-height: 60px;
+    max-width: 60px;
+    border-radius: 50%;
+}
+.post{
+    border: 2px solid #210054;
+    margin: 16px;
+}
