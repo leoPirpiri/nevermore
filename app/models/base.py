@@ -23,8 +23,10 @@ class Base:
         # Trata e obtém a tupla de chaves primárias
         if isinstance(pk, tuple) or isinstance(pk, list):
             self.pk_names = tuple(pk)
-        else:
+        elif not pk is None:
             self.pk_names = tuple([pk])
+        else:
+            self.pk_names = tuple()
         
         # Query padrão
         self._default_query = kwargs.get('default_query', None)
