@@ -1,9 +1,11 @@
 try:
     from app.models.base import Base, Stub
-    from app.models.db_wrapper import inserir_citacao, inserir_marcacao, inserir_topico, get_topico_pk, get_opinioes_topico_pk
+    from app.models import db_wrapper
+    #from app.models.db_wrapper import inserir_citacao, inserir_marcacao, inserir_topico, get_topico_pk, get_opinioes_topico_pk
 except:
     from . import Base, Stub
-    from .db_wrapper import inserir_citacao, inserir_marcacao, inserir_topico, get_topico_pk, get_opinioes_topico_pk
+    from . import db_wrapper
+    #from .db_wrapper import inserir_citacao, inserir_marcacao, inserir_topico, get_topico_pk, get_opinioes_topico_pk
 
 from datetime import datetime
 
@@ -24,8 +26,8 @@ class Opinion(Base):
 
 
 def __criar_topico(nome_topico):
-    if get_topico_pk(nome_topico) is None:
-        inserir_topico({'nome_topico': nome_topico})
+    if db_wrapper.get_topico_pk(nome_topico) is None:
+        db_wrapper.inserir_topico({'nome_topico': nome_topico})
 
 
 def _criar_opiniao(dados: dict, funcdb, marcados=[], topicos=[]) -> int:
@@ -34,10 +36,10 @@ def _criar_opiniao(dados: dict, funcdb, marcados=[], topicos=[]) -> int:
     p = funcdb(dados)[0]
 
     for marc in marcados:
-        inserir_marcacao({'id_post': p, 'id_usuario': marc.id_usuario()})
+        db_wrapper.inserir_marcacao({'id_post': p, 'id_usuario': marc.id_usuario()})
     for top in topicos:
         __criar_topico(top)
-        inserir_citacao({'id_post': p, 'nome_topico': top})
+        db_wrapper.inserir_citacao({'id_post': p, 'nome_topico': top})
 
     return p
 
@@ -55,4 +57,4 @@ def __comment_post_wrapper(instancia={}):
 def buscar_opinioes_por_topico(topico):
     ''' Retorna uma lista de Opiniões que estão marcados com o tópico especificado.
     '''
-    return get_opinioes_topico_pk(topico, autowrap=__comment_post_wrapper)
+    return db_wrapper.get_opinioes_topico_pk(topico, autowrap=__comment_post_wrapper)

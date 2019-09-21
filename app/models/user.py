@@ -1,11 +1,13 @@
 try:
     from app.models.base import Base, Stub
     from app.models.post import Post as Postagem
-    from app.models.db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
+    from app.models import db_wrapper
+    #from app.models.db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
 except:
     from .base import Base, Stub
     from .post import Post as Postagem
-    from .db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
+    from . import db_wrapper
+    #from .db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
 
 
 from enum import Enum
@@ -27,31 +29,31 @@ class User(Base):
         self.senha = self.foto = self.visibilidade = self.cont_seguidores = Stub()
 
         if id_usuario is None and 'nome_usuario' in kwargs:
-            kwargs['instancia'] = get_usuario_nome_usuario(kwargs['nome_usuario'])
+            kwargs['instancia'] = db_wrapper.get_usuario_nome_usuario(kwargs['nome_usuario'])
             self.id_usuario = kwargs['instancia']['id_usuario']
 
         super().__init__(pk='id_usuario', *args, **kwargs)
 
     def _default_query(self, field):
-        r = get_usuario_pk(self.id_usuario())
+        r = db_wrapper.get_usuario_pk(self.id_usuario())
         return r
 
     def get_postagens(self):
-        return get_postagens_usuario_pk(self.id_usuario(), autowrap=Postagem)
+        return db_wrapper.get_postagens_usuario_pk(self.id_usuario(), autowrap=Postagem)
 
     def get_seguindo(self):
-        return get_seguindo_usuario_pk(self.id_usuario(), autowrap=User)
+        return db_wrapper.get_seguindo_usuario_pk(self.id_usuario(), autowrap=User)
 
     def get_seguidores(self):
-        return get_seguidores_usuario_pk(self.id_usuario(), autowrap=User)
+        return db_wrapper.get_seguidores_usuario_pk(self.id_usuario(), autowrap=User)
 
     def get_bloqueados(self):
-        return get_bloqueados_usuario_pk(self.id_usuario(), autowrap=User)
+        return db_wrapper.get_bloqueados_usuario_pk(self.id_usuario(), autowrap=User)
     
     def get_relacionamento(self, usuario_alvo: 'User') -> Relacionamento:
         ''' Obtém uma instância de Relacionamento
         '''
-        r = get_relacao_usuario_pk(self.id_usuario(), usuario_alvo.id_usuario())
+        r = db_wrapper.get_relacao_usuario_pk(self.id_usuario(), usuario_alvo.id_usuario())
         return Relacionamento.NONE if r is None else Relacionamento(r['tipo'])
     
     def set_relacionamento(self, usuario_alvo: 'User', relacao: Relacionamento):
@@ -61,7 +63,7 @@ class User(Base):
         (A atualização é completa, para garantir a integridade do banco de dados).
         '''
         r = self.get_relacionamento(usuario_alvo)
-        opr = inserir_relacao if r == Relacionamento.NONE else update_relacao_usuario
+        opr = db_wrapper.inserir_relacao if r == Relacionamento.NONE else db_wrapper.update_relacao_usuario
         opr({'tipo': relacao.value, 'origem': self.id_usuario(), 'alvo': usuario_alvo.id_usuario()})
         
         if r == Relacionamento.SEGUINDO or relacao == Relacionamento.SEGUINDO:
@@ -74,7 +76,7 @@ class User(Base):
         d = self.to_dict() if dados is None else dados
         if upd_cont_seguidores:
             d['cont_seguidores'] = len(self.get_seguidores())
-        update_usuario(d)
+        db_wrapper.update_usuario(d)
 
 
 
@@ -84,10 +86,10 @@ def registrar_usuario(dados: dict, lazy: bool = True) -> 'User':
     Se lazy=True, então retorna uma instância preguiçosa de Usuário.
     Do contrário, inicializa-o com as informações contidas em 'dados' (Menos seguro).
     '''
-    q = inserir_usuario(dados)[0]
+    q = db_wrapper.inserir_usuario(dados)[0]
     return User(q) if lazy else User(q, instancia=dados)
 
 def buscar_usuarios_por_string(occur):
     ''' Busca uma lista de usuário que possuem a string de ocorrência na biografia, nome ou nome completo.
     '''
-    return get_usuarios_busca(occur, autowrap=User)
+    return db_wrapper.get_usuarios_busca(occur, autowrap=User)

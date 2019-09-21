@@ -1,9 +1,11 @@
 try:
     from app.models.base import Base, Stub
-    from app.models.db_wrapper import get_notificao_pk, update_notificacao, inserir_notificacao
+    from app.models import db_wrapper
+    #from app.models.db_wrapper import get_notificao_pk, update_notificacao, inserir_notificacao
 except:
     from . import Base, Stub
-    from .db_wrapper import get_notificao_pk, update_notificacao, inserir_notificacao
+    from . import db_wrapper
+    #from .db_wrapper import get_notificao_pk, update_notificacao, inserir_notificacao
 
 from datetime import datetime
 
@@ -19,11 +21,11 @@ class Notification(Base):
         super().__init__(pk='id_notificacao', *args, **kwargs)
     
     def _default_query(self, field):
-        return get_notificao_pk(self.id_notificacao())
+        return db_wrapper.get_notificao_pk(self.id_notificacao())
 
     def marcar_lida(self):
         self.__set('lida', True)
-        update_notificacao(self.to_dict())
+        db_wrapper.update_notificacao(self.to_dict())
     
     def get_dono(self):
         try:
@@ -55,7 +57,7 @@ def __criar_notif(d: dict, *args, **kwargs) -> Notification:
     du = {'lida': True, 'data_evento': datetime.now(), 'mencionado': None, 'conteudo': None}
     du.update(d)
     du.update(kwargs)
-    return Notification(inserir_notificacao(du)[0])
+    return Notification(db_wrapper.inserir_notificacao(du)[0])
 
 def criar_notificacao_usuario(dono, mencionado, tipo: NotificationType, *args, **kwargs) -> Notification:
     ''' Cria uma notificação relacionada a dois usuários (isto é, relações).
