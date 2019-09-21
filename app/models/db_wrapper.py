@@ -65,10 +65,10 @@ def close_cur(e=None):
 
 
 def get_base_schema():
-    try:
+    if has_request_context():
         with current_app.open_resource('models/base.sql') as f:
             r = f.read().decode('utf8')
-    except:
+    else:
         with open('app/models/base.sql', 'r') as f:
             r = f.read()
     return r

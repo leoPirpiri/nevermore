@@ -67,7 +67,7 @@ class User(Base):
         opr({'tipo': relacao.value, 'origem': self.id_usuario(), 'alvo': usuario_alvo.id_usuario()})
         
         if r == Relacionamento.SEGUINDO or relacao == Relacionamento.SEGUINDO:
-            atualizar_dados_usuario(upd_cont_seguidores=True)
+            self.atualizar_dados_usuario(upd_cont_seguidores=True)
 
     def atualizar_dados_usuario(self, dados:dict = None, upd_cont_seguidores=True):
         ''' Atualize os dados do usuário por meio da classe ou passando dados: dict como argumento.

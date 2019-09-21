@@ -32,6 +32,6 @@ def criar_comentario(texto, foto, dono, post, data=None, marcados=[], topicos=[]
     'post' é do tipo Post/Opinião.
     'data' será a hora atual caso seja None.
     '''    
-    d = {'texto': texto, 'foto': foto, 'dono': dono.id_usuario(), 'data_post': data, 'post': post.id_post()}
+    d = {'texto': texto, 'foto': foto, 'dono': dono.id_usuario(), 'data_post': data, 'id_postagem': post.id_post()}
     p = _criar_opiniao(d, db_wrapper.inserir_comentario, marcados, topicos)
     return Comment(p)

@@ -73,5 +73,5 @@ def criar_notificacao_post(dono, conteudo, *args, **kwargs) -> Notification:
     'conteudo' é do tipo Opinion.
     Parâmetros adicionais podem ser especificado, como mencionado, tipo, data e lida.
     '''
-    d = { 'dono_notificacao': dono.id_usuario(), 'conteudo': conteudo.id_post(), 'tipo': NotificationType.MARCACAO_POST }
+    d = { 'dono_notificacao': dono.id_usuario(), 'conteudo': conteudo.id_post(), 'tipo': NotificationType.MARCACAO_POST.value }
     return __criar_notif(d, *args, **kwargs)
