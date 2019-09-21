@@ -1,6 +1,8 @@
 from app.models.db_wrapper import clear_db
 from app.models import user, post, comment, notification
 
+from datetime import timedelta
+from datetime import datetime as dt
 
 def usercase_0():
     clear_db()
@@ -22,8 +24,8 @@ def usercase_0():
 
     leandro.set_relacionamento(wilson, user.Relacionamento.BLOQUEADO)
 
-
-    post.criar_post("WIIILSOOOON!!!", "wilson.jpg", vk, topicos=['bff'])
+    datenow = dt.now() - timedelta(seconds=1)
+    post.criar_post("WIIILSOOOON!!!", "wilson.jpg", vk, data=datenow, topicos=['bff'])
     p = post.criar_post("Bora #terminar isso logo. @leandro", "", vk, marcados=[leandro], topicos=['terminar'])
 
     comment.criar_comentario("Já vou", "", leandro, p, marcados=[teste, vk], topicos=['terminar'])
@@ -35,4 +37,17 @@ def usercase_0():
 
 
 
-usercase_0()
+def usercase_1():
+    #usercase_0()
+
+    vk = user.User(nome_usuario='vk')
+    leandro = user.User(nome_usuario='leandro')
+    assert vk.get_relacionamento(leandro) == user.Relacionamento.SEGUINDO
+    ps = vk.get_postagens()
+    assert ps[1].texto() == "WIIILSOOOON!!!"
+    assert "terminar" in ps[0].texto()
+    c = ps[0].get_comentarios()
+    assert len(c) == 1
+    assert "vou" in c[0].texto()
+
+usercase_1()

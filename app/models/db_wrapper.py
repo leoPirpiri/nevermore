@@ -20,12 +20,12 @@ __tmp_cur = None
 
 def commit_changes(force=False):
     global __tmp_conn, __tmp_cur
-    if not has_request_context():
+    if not has_request_context() and not __tmp_conn is None:
         __tmp_conn.commit()
     elif 'dba' in g and force:
         g.dba.commit()
 
-def get_db(discardPrevious=True) -> psycopg2.extras.DictCursor:
+def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     global __tmp_conn, __tmp_cur
     """Obtém e levanta, se necessário, uma conexão ao banco de dados.
     """
@@ -42,8 +42,10 @@ def get_db(discardPrevious=True) -> psycopg2.extras.DictCursor:
         g.dba = psycopg2.connect(dbname="projbd", user="vk")
     if 'cur' not in g:
         g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    elif discardPrevious:
-        g.cur.fetchall()
+    
+    if discardPrevious:
+        g.cur.close()
+        g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     return g.cur
 
