@@ -5,22 +5,24 @@ Este módulo contém os SQLs e funções usuais de acesso ao BD.
 
 
 
+from functools import wraps
+
+import click
 import psycopg2
 import psycopg2.extras
-import click
 from flask import current_app, g, has_request_context
 from flask.cli import with_appcontext
-from functools import wraps
+
 
 
 __tmp_conn = None
 __tmp_cur = None
 
-def commit_changes():
+def commit_changes(force=False):
     global __tmp_conn, __tmp_cur
     if not has_request_context():
         __tmp_conn.commit()
-    elif 'dba' in g:
+    elif 'dba' in g and force:
         g.dba.commit()
 
 def get_db(discardPrevious=True) -> psycopg2.extras.DictCursor:
@@ -50,6 +52,8 @@ def close_cur(e=None):
     """If this request connected to the database, close the
     connection.
     """
+    commit_changes(True)
+
     cur = g.pop('db', None)
     if cur is not None:
         cur.close()
@@ -75,19 +79,12 @@ def get_base_schema():
 
 
 
-
-
-def __impl_default_fetch_one(r):
+def __impl_default_fetch(r, one=True):
     cur = get_db()
-    p = r[0] if hasattr(r[1], '__iter__') and not isinstance(r[1], str) else [r[0]]
+    p = r[1] if hasattr(r[1], '__iter__') and not isinstance(r[1], str) else [r[1]]
     cur.execute(r[0], p)
-    return cur.fetchone()
-
-def __impl_default_fetch_many(r):
-    cur = get_db()
-    p = r[0] if hasattr(r[1], '__iter__') and not isinstance(r[1], str) else [r[0]]
-    cur.execute(r[0], p)
-    return cur.fetchall()
+    if not one is None:
+        return cur.fetchone() if one else cur.fetchall()
 
 '''
 Magia negra: Faz uma consulta ao Banco de Dados.
@@ -97,9 +94,13 @@ def default_fetch_one(fn):
     @wraps(fn)
     def wrapped(*args, **kwargs):
         todict = kwargs.pop('todict', False)
+        autowrap = kwargs.pop('autowrap', None)
         r = fn(*args, **kwargs)
-        rt = __impl_default_fetch_one(r)
-        return dict(rt) if todict else rt
+        rt = __impl_default_fetch(r)
+        if callable(autowrap):
+            return autowrap(instancia=dict(rt))
+        else:
+            return dict(rt) if todict else rt
     return wrapped
 
 '''
@@ -110,11 +111,23 @@ def default_fetch_many(fn):
     @wraps(fn)
     def wrapped(*args, **kwargs):
         todict = kwargs.pop('todict', False)
+        autowrap = kwargs.pop('autowrap', None)
         r = fn(*args, **kwargs)
-        rt = __impl_default_fetch_many(r, todict)
-        return [dict(i) for i in rt] if todict else rt
+        rt = __impl_default_fetch(r, False)
+        if callable(autowrap):
+            return [autowrap(instancia=dict(i)) for i in rt]
+        else:
+            return [dict(i) for i in rt] if todict else rt
     return wrapped
 
+'''
+Magia negra: Faz uma operação no Banco de Dados.
+'''
+def default_fetch_none(fn):
+    @wraps(fn)
+    def wrapped(*args, **kwargs):
+        rt = __impl_default_fetch(fn(*args, **kwargs), None)
+    return wrapped
 
 
 
@@ -145,6 +158,14 @@ def get_usuario_nome_usuario(nome_usuario):
 
 
 '''
+Retorna um dicionário para uma instância de Notificação.
+'''
+@default_fetch_one
+def get_notificao_pk(id_notificacao):
+    return ('SELECT * FROM notificacao WHERE id_notificacao = %s', id_notificacao)
+
+
+'''
 Retorna um dicionário para uma instância de Postagem.
 '''
 @default_fetch_one
@@ -172,11 +193,19 @@ def get_relacao_usuario_obj(p):
 
 '''
 Retorna um dicionário para uma relação entre dois usuários.
+Retorna None caso não exista tal relacionamento.
 Consulte update_relacao_usuario_pk.
 '''
 def get_relacao_usuario_pk(origem, alvo):
-    return get_relacao_usuario_obj({'origem': origem, 'alvo': alvo})
+    r = get_relacao_usuario_obj({'origem': origem, 'alvo': alvo})
+    return None if len(r) == 0 else r[0]
 
+'''
+Retorna um dicionário para um tópico.
+'''
+@default_fetch_one
+def get_topico_pk(nome_topico):
+    return ('SELECT * FROM topico WHERE nome_topico = %s', nome_topico)
 
 
 
@@ -189,42 +218,42 @@ Retorna uma lista de dicionários de notificações do usuário.
 '''
 @default_fetch_many
 def get_notificacoes_usuario_pk(id_usuario):
-    return ('SELECT * FROM notificacao WHERE dono_notificacao = %s', [id_usuario])
+    return ('SELECT * FROM notificacao WHERE dono_notificacao = %s ORDER BY data_evento DESC', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de postagens do usuário.
 '''
 @default_fetch_many
 def get_postagens_usuario_pk(id_usuario):
-    return ('SELECT * FROM opiniao INNER JOIN postagem ON opiniao.id_post = postagem.id_post WHERE opiniao.dono = %s', [id_usuario])
+    return ('SELECT * FROM opiniao INNER JOIN postagem ON opiniao.id_post = postagem.id_post WHERE opiniao.dono = %s ORDER BY opiniao.data_post DESC', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário segue.
 '''
 @default_fetch_many
 def get_seguindo_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao WHERE tipo = 0 AND origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 0 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário solicitou para seguir.
 '''
 @default_fetch_many
 def get_solicitou_seguir_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao WHERE tipo = 1 AND origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 1 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário bloqueou.
 '''
 @default_fetch_many
 def get_bloqueados_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao WHERE tipo = 2 AND origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 2 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que seguem este usuário.
 '''
 @default_fetch_many
 def get_seguidores_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao WHERE tipo = 0 AND alvo = %s', [id_usuario])
+    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.origem WHERE relacao.tipo = 0 AND relacao.alvo = %s', [id_usuario])
 
 
 
@@ -244,7 +273,7 @@ Retorna uma lista de dicionários de opiniões que contém o tópico especificad
 '''
 @default_fetch_many
 def get_opinioes_topico_pk(nome_topico):
-    return ('SELECT * FROM opiniao INNER JOIN citacao_topico ON opiniao.id_post = citacao_topico.id_post WHERE citacao_topico.nome_topico = %s', [nome_topico])
+    return ('SELECT * FROM opiniao INNER JOIN citacao_topico ON opiniao.id_post = citacao_topico.id_post WHERE citacao_topico.nome_topico = %s ORDER BY opiniao.data_post DESC', [nome_topico])
 
 
 '''
@@ -253,7 +282,7 @@ Retorna uma lista de dicionários de opiniões que contém o tópico especificad
 @default_fetch_many
 def get_usuarios_busca(substring):
     substring = "%" + substring + "%"
-    return ('SELECT * FROM usuario WHERE nome_usuario ILIKE %s OR nome_real ILIKE %s OR biografia ILIKE %s', [substring, substring, substring])
+    return ('SELECT * FROM usuario WHERE nome_usuario ILIKE %s OR nome_real ILIKE %s OR biografia ILIKE %s ORDER BY cont_seguidores DESC', [substring, substring, substring])
 
 
 
@@ -292,6 +321,20 @@ def default_commit_one(fn):
         return r
     return wrapped
 
+'''
+Magia negra: Faz uma operação no banco de dados e commita imediatamente.
+'''
+def default_commit_none(fn):
+    @wraps(fn)
+    def wrapped(*args, **kwargs):
+        r = default_fetch_none(fn)(*args, **kwargs)
+        commit_changes()
+        return r
+    return wrapped
+
+
+
+
 
 
 
@@ -314,9 +357,9 @@ Retorna uma lista(?) contendo as chaves primárias.
 '''
 @default_commit_one
 def inserir_postagem(p):
-    id_post = __impl_default_fetch_one((
-        ("INSERT INTO opiniao (texto, foto, dono, data_post)"
-        "VALUES (%(texto)s, %(foto)s, %(dono)s, %(data_post)s) RETURNING id_post"), p))[0]
+    id_post = __impl_default_fetch((
+        ("INSERT INTO opiniao (texto, foto, dono, data_post, comentario)"
+        "VALUES (%(texto)s, %(foto)s, %(dono)s, %(data_post)s, FALSE) RETURNING id_post"), p))[0]
     p['id_post'] = id_post
     return ("INSERT INTO postagem (id_post) VALUES (%(id_post)s) RETURNING id_post", p)
 
@@ -329,9 +372,9 @@ Retorna uma lista(?) contendo as chaves primárias.
 '''
 @default_commit_one
 def inserir_comentario(p):
-    id_post = __impl_default_fetch_one((
-        ("INSERT INTO opiniao (texto, foto, dono, data_post)"
-        "VALUES (%(texto)s, %(foto)s, %(dono)s, %(data_post)s) RETURNING id_post"), p))[0]
+    id_post = __impl_default_fetch((
+        ("INSERT INTO opiniao (texto, foto, dono, data_post, comentario)"
+        "VALUES (%(texto)s, %(foto)s, %(dono)s, %(data_post)s, TRUE) RETURNING id_post"), p))[0]
     p['id_post'] = id_post
     return ("INSERT INTO comentario (id_post, id_postagem) VALUES (%(id_post)s, %(id_postagem)s) RETURNING id_post", p)
 
@@ -426,7 +469,7 @@ Atualiza uma relação entre dois usuários.
 Recebe um dicionário como parâmetro.
 Consulte get_relacao_usuario_pk.
 '''
-@default_commit_one
+@default_commit_none
 def update_relacao_usuario(r):
     return ('UPDATE relacao SET tipo = %(tipo)s WHERE origem = %(origem)s AND alvo = %(alvo)s', r)
 
@@ -434,7 +477,7 @@ def update_relacao_usuario(r):
 '''
 Atualiza as informações de um usuário.
 '''
-@default_commit_one
+@default_commit_none
 def update_usuario(r):
     return ('UPDATE usuario SET ' + __update_dict_to_set(r, 'id_usuario') + ' WHERE id_usuario = %(id_usuario)s', r)
 
@@ -442,7 +485,7 @@ def update_usuario(r):
 '''
 Atualiza as informações de uma notificação.
 '''
-@default_commit_one
+@default_commit_none
 def update_notificacao(r):
     return ('UPDATE notificacao SET ' + __update_dict_to_set(r, 'id_notificacao') + ' WHERE id_notificacao = %(id_notificacao)s', r)
 
@@ -502,7 +545,8 @@ def btests_0():
     inserir_marcacao({'id_post': terminar_post, 'id_usuario': leandro})
     inserir_citacao({'id_post': terminar_post, 'nome_topico': terminar_top})
 
-    inserir_comentario({'texto': "Já vou", 'foto': '', 'dono': leandro, 'id_postagem': terminar_post, 'data_post': datetime.datetime.now()})
+    comentario = inserir_comentario({'texto': "Já vou", 'foto': '', 'dono': leandro, 'id_postagem': terminar_post, 'data_post': datetime.datetime.now()})[0]
+    inserir_citacao({'id_post': comentario, 'nome_topico': terminar_top})
 
     inserir_notificacao({'tipo': 0, 'lida': False, 'data_evento': datetime.datetime.now(),
                          'dono_notificacao': vk, 'mencionado': wilson, 'conteudo': None})
@@ -510,3 +554,6 @@ def btests_0():
                          'dono_notificacao': wilson, 'mencionado': vk, 'conteudo': None})
     inserir_notificacao({'tipo': 1, 'lida': True, 'data_evento': datetime.datetime.now(),
                          'dono_notificacao': leandro, 'mencionado': None, 'conteudo': terminar_post})
+
+
+

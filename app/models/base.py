@@ -29,7 +29,8 @@ class Base:
             self.pk_names = tuple()
         
         # Query padrão
-        self._default_query = kwargs.get('default_query', None)
+        if not hasattr(self, '_default_query'):
+            self._default_query = kwargs.get('default_query', None)
 
         # Armazena quais colunas são stubs
         self._stubs = set()
@@ -38,10 +39,17 @@ class Base:
             if isinstance(v, Stub):
                 self._stubs.add(k)
                 vars(self)[k] = lambda t=k: self._query(t)
+
+        for k in self.pk_names:
+            vars(self)[k + "__primitive"] = True
+        
+        for k in self._stubs:
+            vars(self)[k + "__primitive"] = False
         
         # Atualiza os campos das chaves primárias, para termos certeza de que são invocaveis
         # i.e., deixar consistente com as outras colunas.
         self.__update_fields(dict([(n, self.__get(n, False)) for n in self.pk_names]))
+        self._set = self.__set
         
         # Inicializador de instância
         if 'instancia' in kwargs:
@@ -55,7 +63,14 @@ class Base:
     '''
     def pk(self):
         return tuple(self.__get(f) for f in self.pk_names)
+    
 
+    '''
+    Converte a instância em um dicionário.
+    Invoca todos os campos/colunas da classe.
+    '''
+    def to_dict(self):
+        return dict((i, self.__get(i)) for i in self._stubs.union(set(self.pk_names)))
 
     '''
     Wrapper para campos dinâmicos.
@@ -68,20 +83,27 @@ class Base:
     def _query(self, field):
         if not self._default_query is None:
             self.__update_stubs(self._default_query(field))
-        return self.__get(field, auto_call=False)
+        return self.__get(field, auto_call='__primitive')
 
     '''
     Acessor absoluto
     '''
     def __get(self, nome, auto_call=True):
         r = vars(self)[nome]
+        if auto_call == '__primitive':
+            auto_call = getattr(self, nome + "__primitive", False)
         return r() if auto_call and callable(r) else r
     
     '''
     Modificador absoluto
     '''
     def __set(self, nome, val):
-        vars(self)[nome] = val if callable(val) else lambda v=val: v
+        if callable(val):
+            vars(self)[nome + "__primitive"] = False
+            vars(self)[nome] = val
+        else:
+            vars(self)[nome + "__primitive"] = True
+            vars(self)[nome] = lambda v=val: v
     
     '''
     Função auxiliar opcional.
@@ -99,4 +121,6 @@ class Base:
     Utiliza o método __set.
     '''
     def __update_stubs(self, stubdict: dict):
-        return self.__update_fields(dict([(i, stubdict[i]) for i in self._stubs.intersection(stubdict)]))
+        a = self._stubs.intersection(dict(stubdict))
+        b = [(i, stubdict[i]) for i in a]
+        return self.__update_fields(dict(b))

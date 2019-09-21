@@ -10,6 +10,7 @@ CREATE TABLE usuario (
     biografia varchar(255),
     senha varchar(255),
     foto varchar(255),
+    cont_seguidores INTEGER NOT NULL DEFAULT 0,
     visibilidade BOOLEAN NOT NULL
 );
 
@@ -28,6 +29,7 @@ CREATE TABLE opiniao (
     foto varchar(255),
     dono INTEGER NOT NULL,
     data_post TIMESTAMP,
+    comentario BOOLEAN NOT NULL,
     FOREIGN KEY (dono) REFERENCES usuario(id_usuario)
 );
 
