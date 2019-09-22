@@ -20,7 +20,8 @@ def index():
 @app.route("/home/")
 @login_required
 def home():
-    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics(), notificacoes = get_notificacoes_usuario(g.user))
+    return render_template("home.html", logged_user = g.user, posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics(), notificacoes = get_notificacoes_usuario(g.user))
+
 
 @app.route("/busca/")
 @login_required
@@ -30,7 +31,7 @@ def busca():
         if termo is None or len(termo) == 0:
             return redirect(url_for('index'))
         elif termo[0] == '#':
-            return render_template("home.html", posts=buscar_opinioes_por_topico(termo[1:]), opinar_form=False, notificacoes = get_notificacoes_usuario(g.user), termo=termo)
+            return render_template("home.html", logged_user = g.user, posts=buscar_opinioes_por_topico(termo[1:]), opinar_form=False, notificacoes = get_notificacoes_usuario(g.user), termo=termo, assuntos = opinion.buscar_trend_topics())
         else:
             return render_template("usuarios.html", usuarios=buscar_usuarios_por_string(termo), notificacoes = get_notificacoes_usuario(g.user), termo=termo)
     return redirect(url_for('index'))
@@ -38,7 +39,7 @@ def busca():
 @app.route("/perfil/")
 @login_required
 def perfil():
-    return render_template("perfil.html", assuntos = opinion.buscar_trend_topics())
+    return render_template("perfil.html", logged_user = g.user, posts=g.user.get_postagens(), assuntos = opinion.buscar_trend_topics())
 
 @app.route("/post/")
 @login_required

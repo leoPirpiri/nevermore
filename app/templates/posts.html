@@ -1,21 +1,57 @@
-
-{% for p in posts %}
+{% for pt in posts %}
 <div class="post">
     <div class="row px-3 pt-3">
         <div class="pic-thumbnail mx-2">
             <img class="img-fluid"
-                    src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                    alt="Foto do usuário">
+                 src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                 alt="Foto do usuário">
         </div>
-        <div style="display: none">{{ p.data_post() }}</div>
         <div align="left">
-            <h4>{{ p.get_dono().nome_real() }}</h4>
-            <h6>@{{ p.get_dono().nome_usuario() }}</h6>
+            <h4>{{ pt.get_dono().nome_real() }}</h4>
+            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou... </h6>
         </div>
     </div>
     <hr>
     <div class="post-content">
-        <p>{{ p.texto() }}</p>
+        <p>{{ pt.texto() }}</p>
+    </div>
+    <div class="accordion" id="accordion_coment">
+        <div class="card">
+            <div class="card-header py-0" id="headingOne" align="right">
+                <button class="btn btn-link" type="button" data-toggle="collapse"
+                        data-target="#collapseOne"
+                        aria-expanded="true" aria-controls="collapseOne">
+                    <i class="fa fa-commenting-o" aria-hidden="true"></i> COMENTÁRIOS
+                </button>
+            </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                 data-parent="#accordion_coment">
+                <div class="card-body">
+                    <div id="comentarios">
+                    </div>
+                    <div class="row">
+                        <div class="col-4 p-0">
+                            <div class="row">
+                                <div class="col-4 px-0">
+                                    <div class="pic-thumbnail">
+                                        <img class="img-fluid"
+                                             src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                                             alt="Foto do usuário">
+                                    </div>
+                                </div>
+                                <div class="col-8 px-0" align="left">
+                                    <h5>{{ logged_user.nome_real() }}</h5>
+                                    <h6>@{{ logged_user.nome_usuario() }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <textarea class="form-control" style="resize:none;" placeholder="Comente aqui!"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endfor %}

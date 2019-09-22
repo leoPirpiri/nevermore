@@ -7,7 +7,10 @@
                 <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
                      alt="Foto do usuário">
                 <div align="left">
-                    <h4>Nome do usuário</h4>
+                    <h4>
+                        <button type="button" class="btn" id="user_config" title="Alterar algumas informações"><i class="fa fa-cogs" aria-hidden="true"></i></button>
+                        Nome do usuário
+                    </h4>
                     <h6>@nickname</h6>
                 </div>
                 <div align="right">
@@ -76,24 +79,11 @@
                 <h2>Meus Contos...</h2>
                 <hr>
                 <div id="tl_content">
-                    <div class="post">
-                        <div class="row px-3 pt-3">
-                            <div class="pic-thumbnail mx-2">
-                                <img class="img-fluid"
-                                     src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                                     alt="Foto do usuário">
-                            </div>
-                            <div align="left">
-                                <h4>Nome do usuário</h4>
-                                <h6>@nickname</h6>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="post-content">
-                            <p>Eu voto no bem, UFPB acima de tudo, Deus acima de todos. #UlyssesReitor. O mito vem
-                                aí!</p>
-                        </div>
-                    </div>
+                    {% if posts %}
+                        {% include 'posts.html' %}
+                    {% else %}
+                        Não possue posts!
+                    {% endif %}
                 </div>
             </div>
             <hr>
