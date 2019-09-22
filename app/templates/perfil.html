@@ -9,9 +9,9 @@
                 <div align="left">
                     <h4>
                         <button type="button" class="btn" id="user_config" title="Alterar algumas informações"><i class="fa fa-cogs" aria-hidden="true"></i></button>
-                        Nome do usuário
+                        {{ logged_user.nome_real()}}
                     </h4>
-                    <h6>@nickname</h6>
+                    <h6>@{{ logged_user.nome_usuario() }}</h6>
                 </div>
                 <div align="right">
                     <label>Visibilidade</label>

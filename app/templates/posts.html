@@ -15,19 +15,19 @@
     <div class="post-content">
         <p>{{ pt.texto() }}</p>
     </div>
-    <div class="accordion" id="accordion_coment">
+    <div class="accordion" id="accordion_coment{{ pt.id_post() }}">
         <div class="card">
-            <div class="card-header py-0" id="headingOne" align="right">
+            <div class="card-header py-0" id="heading{{ pt.id_post() }}" align="right">
                 <button class="btn btn-link" type="button" data-toggle="collapse"
-                        data-target="#collapseOne"
-                        aria-expanded="true" aria-controls="collapseOne">
+                        data-target="#collapse{{ pt.id_post() }}"
+                        aria-expanded="true" aria-controls="collapse{{ pt.id_post() }}">
                     <i class="fa fa-commenting-o" aria-hidden="true"></i> COMENTÁRIOS
                 </button>
             </div>
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
-                 data-parent="#accordion_coment">
+            <div id="collapse{{ pt.id_post() }}" class="collapse" aria-labelledby="heading{{ pt.id_post() }}"
+                 data-parent="#accordion_coment{{ pt.id_post() }}">
                 <div class="card-body">
-                    <div id="comentarios">
+                    <div id="comentarios{{ pt.id_post() }}">
                     </div>
                     <div class="row">
                         <div class="col-4 p-0">
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="col-8">
-                            <textarea class="form-control" style="resize:none;" placeholder="Comente aqui!"></textarea>
+                            <textarea id="{{ pt.id_post() }}" class="form-control ctpost" style="resize:none;" placeholder="Comente aqui!"></textarea>
                         </div>
                     </div>
                 </div>

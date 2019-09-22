@@ -1,11 +1,4 @@
-class Data:
-    def __init__(self, dia, hora):
-        self.dias = dia
-        self.horas = hora
-
+from datetime import datetime
 def formatDate(data):
-    data = data.split(' ')
-    dia = data[0].split('-')
-    dia = '-'.join(dia.reverse())
-    hora= data[1][0:5]
-    return Data(dia, hora)
+    data = data.strftime(" %H:%M em %d/%m/%Y")
+    return (data)

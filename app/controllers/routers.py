@@ -9,7 +9,8 @@ from app.models.user import buscar_usuarios_por_string
 
 from app.controllers.opinions import _opinar
 from app.models import opinion
-
+import json
+from app.controllers.dateToDate import formatDate
 
 @app.route("/index/")
 @app.route("/")
@@ -52,3 +53,8 @@ def opinar():
     """Permite ao usuário emitir uma opinião"""
     return _opinar()
  
+@app.route("/teste", methods=("GET", "POST"))
+def json_c():
+    retorno = _opinar()
+    retorno['data_post'] = formatDate(retorno['data_post'])
+    return json.dumps(retorno)
