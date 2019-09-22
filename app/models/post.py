@@ -41,3 +41,9 @@ def get_timeline(usuario):
     'usuario' é do tipo User.
     '''
     return db_wrapper.get_usuario_timeline_pk(usuario.id_usuario(), autowrap=Post)
+
+def get_perfil_timeline(usuario):
+    ''' Obtém os posts no perfil do usuário.
+    'usuario' é do tipo User.
+    '''
+    return db_wrapper.get_postagens_usuario_pk(usuario.id_usuario(), autowrap=Post)
