@@ -50,27 +50,51 @@
             <hr>
             <div>
                 <button id="btn-feed" type="button" class="btn btn-dark">
-                    Garregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
+                    Carregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
                 </button>
             </div>
         </div>
         <div class="col-lg-4 col-12">
+            <div class="accordion" id="accordion_notificacao">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h4 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fa fa-bullhorn" aria-hidden="true"></i> NOTIFICAÇÕES
+                            </button>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                         data-parent="#accordion_notificacao">
+                        <div class="card-body">
+                            <div id="notificacoes">
+                                Notificações aqui
+                            </div>
+                            <button type="button" class="btn btn-info" title="Ver todas a notificações" >
+                                Todas notificações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h2>Assuntos do momento</h2>
             <hr>
             <div id="trends" align="left">
                 <ol class="list-group">
+                    {% if assuntos %}
+                    {% for trends in assuntos%}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #UlyssesReitor
-                        <span class="badge badge-gothic badge-pill">1.206</span>
+                        #{{ trends.nome }}
+                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
                     </li>
+                    {% endfor %}
+                    {% else %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #CãoBemArticulado
-                        <span class="badge badge-gothic badge-pill">756</span>
+                        #Sem momentos
+                        <span class="badge badge-gothic badge-pill">00000</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #AllanDiretor
-                        <span class="badge badge-gothic badge-pill">588</span>
-                    </li>
+                    {% endif %}
                 </ol>
             </div>
         </div>

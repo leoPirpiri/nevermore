@@ -2,6 +2,55 @@
 {% block conteudo %}
 <div id="content_perfil" class="container bg-white py-5" align="center">
     <div class="row">
+        <div class="col-lg-4 col-12">
+            <div id="infors_perfil">
+                <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                     alt="Foto do usuário">
+                <div align="left">
+                    <h4>Nome do usuário</h4>
+                    <h6>@nickname</h6>
+                </div>
+                <div align="right">
+                    <label>Visibilidade</label>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-dark btn-sm active" title="Tornar meu perfil público">
+                            <input type="radio" name="user_visibilidade" id="publico" autocomplete="off" checked>
+                            <i class="fa fa-globe" aria-hidden="true"></i> Público
+                        </label>
+                        <label class="btn btn-dark btn-sm" title="Tornar meu perfil privado">
+                            <input type="radio" name="user_visibilidade" id="privado" autocomplete="off">
+                            <i class="fa fa-users" aria-hidden="true"></i> Privado
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <br>
+                    <textarea id="user_bio" class="form-control" style="resize:none;"
+                              placeholder="A biografia do usuário visivel aqui"
+                              disabled="disabled"></textarea>
+                </div>
+            </div>
+            <hr>
+            <h2>Assuntos do momento</h2>
+            <hr>
+            <div id="trends" align="left">
+                <ol class="list-group">
+                    {% if assuntos %}
+                    {% for trends in assuntos%}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #{{ trends.nome }}
+                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #Sem momentos
+                        <span class="badge badge-gothic badge-pill">00000</span>
+                    </li>
+                    {% endif %}
+                </ol>
+            </div>
+        </div>
         <div class="col-lg-8 col-12">
             <div id="post" class="row">
                 <div class="col-2 p-0">
@@ -24,7 +73,7 @@
             </div>
             <hr>
             <div id="time_line">
-                <h2>Contos...</h2>
+                <h2>Meus Contos...</h2>
                 <hr>
                 <div id="tl_content">
                     <div class="post">
@@ -50,29 +99,8 @@
             <hr>
             <div>
                 <button id="btn-feed" type="button" class="btn btn-dark">
-                    Garregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
+                    Carregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
                 </button>
-            </div>
-        </div>
-        <div class="col-lg-4 col-12">
-            <h2>Assuntos do momento</h2>
-            <hr>
-            <div id="trends" align="left">
-                <ol class="list-group">
-                    {% if assuntos %}
-                        {% for trends in assuntos%}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                #{{ trends.nome }}
-                                <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
-                            </li>
-                        {% endfor %}
-                    {% else %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            #Sem momentos
-                            <span class="badge badge-gothic badge-pill">00000</span>
-                        </li>
-                    {% endif %}
-                </ol>
             </div>
         </div>
     </div>
