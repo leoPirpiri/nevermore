@@ -7,7 +7,7 @@ from app.models.opinion import buscar_opinioes_por_topico
 from app.models.notification import get_notificacoes_usuario
 from app.models import user
 
-from app.controllers.opinions import _opinar
+from app.controllers.opinions import _opinar, _obter_foto
 from app.models import opinion
 
 
@@ -51,8 +51,20 @@ def post():
 def opinar():
     """Permite ao usuário emitir uma opinião"""
     return _opinar()
- 
 
+
+
+@app.route("/foto_perfil_atualizar", methods=("GET", "POST"))
+@login_required
+def foto_perfil_atualizar():
+    """Permite ao usuário atualizar a foto de perfil"""
+    if request.method == "POST":
+        foto = _obter_foto()
+        if not foto is None:
+            g.user.atualizar_dados_usuario({'foto': foto})
+            return "SUCESS"
+    return "INVALID OPERATION"
+ 
 @app.route("/foto_perfil/<nome_usuario>")
 def foto_perfil(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
@@ -65,7 +77,7 @@ def foto_perfil(nome_usuario, id_usuario=None):
     from os import path
     basedir = app.config['IMAGES_USERS_ABS']
     vpath = path.join(basedir, u.foto())
-    if not u is None and u.e_valido() and not u.foto() is None and path.exists(vpath):
+    if not u is None and u.e_valido() and u.foto() and path.exists(vpath):
         return send_from_directory(basedir, u.foto())
 
     return send_from_directory(app.static_folder, 'images_app/default-user.png')
