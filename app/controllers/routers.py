@@ -4,6 +4,7 @@ from app.auth import login_required, logout_required
 
 from app.models.post import get_timeline
 from app.models.opinion import buscar_opinioes_por_topico
+from app.models.notification import get_notificacoes_usuario
 
 from app.controllers.opinions import _opinar
 from app.models import opinion
@@ -18,7 +19,7 @@ def index():
 @app.route("/home/")
 @login_required
 def home():
-    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics())
+    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics(), notificacoes = get_notificacoes_usuario(g.user))
 
 @app.route("/topico/")
 @login_required

@@ -52,29 +52,9 @@
             </div>
         </div>
         <div class="col-lg-4 col-12">
-            <div class="accordion" id="accordion_notificacao">
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                        <h4 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
-                                    aria-expanded="true" aria-controls="collapseOne">
-                                <i class="fa fa-bullhorn" aria-hidden="true"></i> NOTIFICAÇÕES
-                            </button>
-                        </h4>
-                    </div>
-                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
-                         data-parent="#accordion_notificacao">
-                        <div class="card-body">
-                            <div id="notificacoes">
-                                Notificações aqui
-                            </div>
-                            <button type="button" class="btn btn-info" title="Ver todas a notificações" >
-                                Todas notificações
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+            {% include 'notifications.html' %}
+
             <h2>Assuntos do momento</h2>
             <hr>
             <div id="trends" align="left">

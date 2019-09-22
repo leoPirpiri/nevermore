@@ -29,14 +29,14 @@ class Notification(Base):
     
     def get_dono(self):
         try:
-            from app.models.user import User
+            from app.models.user import User as Usuario
         except:
             from .user import User as Usuario
         return Usuario(self.dono())
     
     def get_mencionado(self):
         try:
-            from app.models.user import User
+            from app.models.user import User as Usuario
         except:
             from .user import User as Usuario
         return Usuario(self.mencionado())
@@ -50,7 +50,7 @@ class Notification(Base):
     
     def get_tipo(self) -> NotificationType:
         return NotificationType(self.tipo())
-
+    
 
 
 def __criar_notif(d: dict, *args, **kwargs) -> Notification:
@@ -58,6 +58,7 @@ def __criar_notif(d: dict, *args, **kwargs) -> Notification:
     du.update(d)
     du.update(kwargs)
     return Notification(db_wrapper.inserir_notificacao(du)[0])
+
 
 def criar_notificacao_usuario(dono, mencionado, tipo: NotificationType, *args, **kwargs) -> Notification:
     ''' Cria uma notificação relacionada a dois usuários (isto é, relações).
@@ -67,6 +68,7 @@ def criar_notificacao_usuario(dono, mencionado, tipo: NotificationType, *args, *
     d = { 'dono_notificacao': dono.id_usuario(), 'mencionado': mencionado.id_usuario(), 'tipo': tipo.value }
     return __criar_notif(d, *args, **kwargs)
 
+
 def criar_notificacao_post(dono, conteudo, *args, **kwargs) -> Notification:
     ''' Cria uma notificação relacionada a um post (isto é, uma marcação).
     'dono' (da notificação) é do tipo User.
@@ -75,3 +77,9 @@ def criar_notificacao_post(dono, conteudo, *args, **kwargs) -> Notification:
     '''
     d = { 'dono_notificacao': dono.id_usuario(), 'conteudo': conteudo.id_post(), 'tipo': NotificationType.MARCACAO_POST.value }
     return __criar_notif(d, *args, **kwargs)
+
+
+def get_notificacoes_usuario(dono):
+    ''' Obtém as notificações de um usuário.
+    '''
+    return db_wrapper.get_notificacoes_usuario_pk(dono.id_usuario(), autowrap=Notification)
