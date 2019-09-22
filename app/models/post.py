@@ -33,3 +33,11 @@ def criar_post(texto, foto, dono, data=None, marcados=[], topicos=[]) -> Post:
     d = {'texto': texto, 'foto': foto, 'dono': dono.id_usuario(), 'data_post': data}
     p = _criar_opiniao(d, db_wrapper.inserir_postagem, marcados, topicos)
     return Post(p)
+
+
+def get_timeline(usuario):
+    ''' Obtém a linha do tempo do usuário.
+    Isto é, os posts de quem ele segue, ordenados.
+    'usuario' é do tipo User.
+    '''
+    return db_wrapper.get_usuario_timeline_pk(usuario.id_usuario(), autowrap=Post)

@@ -17,11 +17,13 @@ class Opinion(Base):
         super().__init__(pk='id_post', *args, **kwargs)
     
     def get_dono(self):
-        try:
-            from app.models.user import User
-        except:
-            from .user import User as Usuario
-        return Usuario(self.dono())
+        if not hasattr(self, '__tmp_dono'):
+            try:
+                from app.models.user import User as Usuario
+            except:
+                from .user import User as Usuario
+            self.__tmp_dono = Usuario(self.dono())
+        return self.__tmp_dono
 
 
 

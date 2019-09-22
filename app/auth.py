@@ -1,5 +1,6 @@
 import functools
 
+
 from flask import Blueprint
 from flask import flash
 from flask import g
@@ -57,9 +58,9 @@ def register():
     password for security.
     """
     if request.method == "POST":
-        fullname = request.form["input_signup_name"]
-        username = request.form["input_signup_user"]
-        password = request.form["input_signup_senha"]
+        fullname = request.form.get("input_signup_name", None)
+        username = request.form.get("input_signup_user", None)
+        password = request.form.get("input_signup_senha", None)
         error = None
 
         if not username:
@@ -83,8 +84,8 @@ def register():
 def login():
     """Log in a registered user by adding the user id to the session."""
     if request.method == "POST":
-        username = request.form["input_login_user"]
-        password = request.form["input_login_senha"]
+        username = request.form.get("input_login_user", None)
+        password = request.form.get("input_login_senha", "")
         db = get_db()
         error = None
         user = users.get_user(username)
@@ -110,3 +111,6 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("index"))
+
+
+
