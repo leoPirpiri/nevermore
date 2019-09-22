@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-lg-8 col-12">
             {% if opinar_form %}
-            <form id="opiniao" action="/opinar" method="POST">
+            <form id="opiniao" action="/opinar" method="POST" enctype=multipart/form-data>
                 <div id="post" class="row">
                     <div class="col-2 p-0">
                         <div class="pic-thumbnail">
@@ -13,16 +13,23 @@
                         </div>
                     </div>
                     <div class="input-group col-9 p-0">
-                            <input type="hidden" name="tipo" value="POST">
-                            <div class="col-12">
-                                <textarea id="texto" name="texto" class="form-control" style="resize:none;"
-                                        placeholder="No quê você está pensando?"></textarea>
+                        <input type="hidden" name="tipo" value="POST">
+                        <div class="col-12">
+                            <textarea id="texto" name="texto" class="form-control" style="resize:none;"
+                                    placeholder="No quê você está pensando?"></textarea>
+                        </div>
+                        <div class="col-12" align="right">
+                            <div class="upload-btn-wrapper">
+                                <!--
+                                <button class="btn">Upload a photo</button>
+                                <input class="inputbase" type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
+                                -->
+                                <input type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
                             </div>
-                            <div class="col-12" align="right">
-                                <button class="btn btn-outline-secondary" type="Submit">
-                                    <i class="fa fa-commenting" aria-hidden="true"></i> Peck
-                                </button>
-                            </div>
+                            <button class="btn btn-outline-secondary" type="Submit">
+                                <i class="fa fa-commenting" aria-hidden="true"></i> Peck
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>

@@ -5,6 +5,9 @@ from os import path
 def create_app():
     app = Flask(__name__)
     rpath = path.abspath(path.join(app.root_path, '../'))
+    app.config.from_mapping(
+        IMAGES_USERS = 'IMAGES_USERS'
+    )
     app.config.from_pyfile(path.join(rpath, 'app.cfg'))
     init_app(app)
 

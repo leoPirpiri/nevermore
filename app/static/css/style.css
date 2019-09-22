@@ -102,3 +102,31 @@ body {
 	bottom:80px;
 	right:30px;
 }
+
+.upload-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.upload-btn-wrapper .btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 4px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+
+.upload-btn-wrapper input.inputbase {
+  font-size: 40px;
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.upload-btn-wrapper input[type=file] {
+  width: 200px;
+}
