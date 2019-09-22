@@ -62,13 +62,10 @@ def foto_perfil(nome_usuario, id_usuario=None):
     else:
         u = None
     
-    if not u is None and u.e_valido() and not u.foto() is None:
-        from werkzeug.exceptions import NotFound
-        basedir = app.config['IMAGES_USERS_ABS']
-        
-        try:
-            return send_from_directory(basedir, u.foto())
-        except NotFound as nf:
-            pass
+    from os import path
+    basedir = app.config['IMAGES_USERS_ABS']
+    vpath = path.join(basedir, u.foto())
+    if not u is None and u.e_valido() and not u.foto() is None and path.exists(vpath):
+        return send_from_directory(basedir, u.foto())
 
-    return redirect(url_for('static', filename='images_app/default-user.png'))
+    return send_from_directory(app.static_folder, 'images_app/default-user.png')
