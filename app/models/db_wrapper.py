@@ -29,17 +29,23 @@ def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     global __tmp_conn, __tmp_cur
     """Obtém e levanta, se necessário, uma conexão ao banco de dados.
     """
+    def getc(c, p=None, s=current_app.config):
+        return s[c] if c in s else p
+    
+    dbname = getc('DATABASE_NAME', 'postgres')
+    dbuser = getc('DATABASE_USER', 'postgres')
+    dbpass = getc('DATABASE_PASS')
 
     # Caso não esteja usando Flask
     if not has_request_context():
         if __tmp_conn is None:
-            __tmp_conn = psycopg2.connect(dbname="projbd", user="vk")
+            __tmp_conn = psycopg2.connect(dbname=dbname, user=dbuser, password=dbpass)
         if __tmp_cur is None:
             __tmp_cur = __tmp_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         return __tmp_cur
     
     if 'dba' not in g:
-        g.dba = psycopg2.connect(dbname="projbd", user="vk")
+        g.dba = psycopg2.connect(dbname='projbd', user=dbuser, password=dbpass)
     if 'cur' not in g:
         g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
