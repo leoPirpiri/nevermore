@@ -1,11 +1,11 @@
 from flask import Flask
 from .initdb import init_app
+from os import path
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_mapping(
-        SECRET_KEY='dev'
-    )
+    rpath = path.abspath(path.join(app.root_path, '../'))
+    app.config.from_pyfile(path.join(rpath, 'app.cfg'))
     init_app(app)
 
     from . import auth
