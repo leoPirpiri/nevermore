@@ -3,6 +3,7 @@
 <div id="content_home" class="container bg-white py-5" align="center">
     <div class="row">
         <div class="col-lg-8 col-12">
+            {% if opinar_form %}
             <form id="opiniao" action="/opinar" method="POST">
                 <div id="post" class="row">
                     <div class="col-2 p-0">
@@ -26,32 +27,13 @@
                 </div>
             </form>
             <hr>
+            {% endif %}
             <div id="time_line">
                 <h2>Contos...</h2>
                 <hr>
                 <div id="tl_content">
 
-                    <!-- PONHA POSTS EM SEU PRÓPRIO TEMPLATE -->
-                    {% for p in posts %}
-                    <div class="post">
-                        <div class="row px-3 pt-3">
-                            <div class="pic-thumbnail mx-2">
-                                <img class="img-fluid"
-                                     src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                                     alt="Foto do usuário">
-                            </div>
-                            <div style="display: none">{{ p.data_post() }}</div>
-                            <div align="left">
-                                <h4>{{ p.get_dono().nome_real() }}</h4>
-                                <h6>@{{ p.get_dono().nome_usuario() }}</h6>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="post-content">
-                            <p>{{ p.texto() }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
+                    {% include 'posts.html' %}
 
                 </div>
             </div>

@@ -21,20 +21,20 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 def login_required(view):
     """View decorator that redirects anonymous users to the login page."""
     @functools.wraps(view)
-    def wrapped_view(**kwargs):
+    def wrapped_view(*args, **kwargs):
         if g.user is None:
             return redirect(url_for("index"))
-        return view(**kwargs)
+        return view(*args, **kwargs)
     return wrapped_view
 
 
 def logout_required(view):
     """View decorator that redirects authenticated users to the home page."""
     @functools.wraps(view)
-    def wrapped_view(**kwargs):
+    def wrapped_view(*args, **kwargs):
         if not g.user is None:
             return redirect(url_for("home"))
-        return view(**kwargs)
+        return view(*args, **kwargs)
     return wrapped_view
 
 
