@@ -33,7 +33,7 @@ def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     # Caso não esteja usando Flask
     if not has_request_context():
         if __tmp_conn is None:
-            __tmp_conn = psycopg2.connect(dbname="projbd", user="", password='')
+            __tmp_conn = psycopg2.connect(dbname="projbd", user="leandro", password='Invited,')
         if __tmp_cur is None:
             __tmp_cur = __tmp_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         return __tmp_cur
@@ -210,9 +210,22 @@ def get_topico_pk(nome_topico):
     return ('SELECT * FROM topico WHERE nome_topico = %s', nome_topico)
 
 
-
-
-
+'''
+Retorna um dicionário para os tópicos do momento.
+'''
+@default_fetch_one
+def get_topicos_trends():
+    return ( """SELECT count(top.nome_topico) as quan, top.nome_topico as nome
+                FROM public.citacao_topico as cit,
+                     public.topico as top,
+                     public.opiniao as op
+                WHERE cit.id_post = op.id_post
+                     and cit.nome_topico = top.nome_topico
+                     and (DATE_PART('day', now()::timestamp - op.data_post::timestamp) * 24 + 
+                              DATE_PART('hour', now()::timestamp - op.data_post::timestamp)) < 4
+                group by (top.nome_topico, top.nome_topico)
+                order by quan desc
+                limit 10;""")
 
 
 '''

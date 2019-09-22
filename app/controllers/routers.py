@@ -1,6 +1,7 @@
 from flask import render_template
 from app import app
 from app.auth import login_required, logout_required
+from app.controllers import trends
 
 @app.route("/index/")
 @app.route("/")
@@ -16,4 +17,4 @@ def home():
 @app.route("/perfil/")
 @login_required
 def perfil():
-    return render_template("perfil.html")
+    return render_template("perfil.html", assuntos = trends.get_assuntos([]))

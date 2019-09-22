@@ -24,12 +24,6 @@ class Opinion(Base):
         return Usuario(self.dono())
 
 
-
-def __criar_topico(nome_topico):
-    if db_wrapper.get_topico_pk(nome_topico) is None:
-        db_wrapper.inserir_topico({'nome_topico': nome_topico})
-
-
 def _criar_opiniao(dados: dict, funcdb, marcados=[], topicos=[]) -> int:
     if dados['data_post'] is None:
         dados['data_post'] = datetime.now()

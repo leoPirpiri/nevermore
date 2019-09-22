@@ -1,5 +1,5 @@
 {% extends "header_home.html" %}
-{%block conteudo %}
+{% block conteudo %}
 <div id="content_perfil" class="container bg-white py-5" align="center">
     <div class="row">
         <div class="col-lg-8 col-12">
@@ -59,18 +59,19 @@
             <hr>
             <div id="trends" align="left">
                 <ol class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #UlyssesReitor
-                        <span class="badge badge-gothic badge-pill">1.206</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #CãoBemArticulado
-                        <span class="badge badge-gothic badge-pill">756</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #AllanDiretor
-                        <span class="badge badge-gothic badge-pill">588</span>
-                    </li>
+                    {% if assuntos %}
+                        {% for trends in assuntos%}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                #{{ trends.nome }}
+                                <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            #Sem momentos
+                            <span class="badge badge-gothic badge-pill">00000</span>
+                        </li>
+                    {% endif %}
                 </ol>
             </div>
         </div>
