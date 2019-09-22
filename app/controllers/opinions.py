@@ -1,18 +1,39 @@
 import re
+import os
+import random
 
 from flask import request, url_for, redirect, g
 
 from app import app
 from app.models import user as users
 
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+RND_STR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
+def get_extension(filename):
+    return filename.rsplit('.', 1)[1].lower() if '.' in filename else None
+
+def allowed_file(filename):
+    return get_extension(filename) in ALLOWED_EXTENSIONS
+
 def _opinar():
     """Permite ao usuário emitir uma opinião"""
     if request.method == "POST":
         tipo = request.form.get("tipo", None)
         texto = request.form.get("texto", None)
-        foto = request.form.get("foto", None)
+        foto = request.files.get("foto", None)
         post = request.form.get("post", None)
         user = g.user
+        
+        if not foto is None and allowed_file(foto.filename):
+            fext = ''.join(random.choices(RND_STR, k=30)) + '.' + get_extension(foto.filename)
+            basedir = os.path.join(app.static_folder, app.config['IMAGES_USERS'])
+            os.makedirs(basedir, exist_ok=True)
+            foto.save(os.path.join(basedir, fext))
+            foto = fext
+        else:
+            foto = None
 
         if texto is None or len(texto) > 500:
             return "Invalid length."

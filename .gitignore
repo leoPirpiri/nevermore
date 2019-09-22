@@ -104,3 +104,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 app.cfg
+app/static/IMAGES_USERS/

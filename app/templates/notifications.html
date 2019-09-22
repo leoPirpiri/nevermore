@@ -1,0 +1,38 @@
+
+<div class="accordion" id="accordion_notificacao">
+    <div class="card">
+        <div class="card-header" id="headingOne">
+            <h4 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                        aria-expanded="true" aria-controls="collapseOne">
+                    <i class="fa fa-bullhorn" aria-hidden="true"></i> NOTIFICAÇÕES
+                </button>
+            </h4>
+        </div>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                data-parent="#accordion_notificacao">
+            <div class="card-body">
+                <div id="notificacoes">
+                    
+                    {% for n in notificacoes %}
+                    <div class="notificacao">
+                        {% if n.tipo() == 0 %}
+                        <a href="/perfil/{{ n.get_mencionado().nome_usuario() }}">@{{ n.get_mencionado().nome_usuario() }} deseja seguir seu perfil</a>
+                        {% elif n.tipo() == 1 %}
+                        <a href="/perfil/{{ n.get_mencionado().nome_usuario() }}">@{{ n.get_mencionado().nome_usuario() }} está seguindo-o</a>
+                        {% elif n.tipo() == 2 %}
+                        <a href="/perfil/{{ n.get_mencionado().nome_usuario() }}">Você agora está seguindo @{{ n.get_mencionado().nome_usuario() }}</a>
+                        {% else %}
+                        <a href="/post/{{ n.get_conteudo().id_post() }}">Você foi marcado em uma publicação de @{{ n.get_conteudo().get_dono().nome_usuario() }}</a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <button type="button" class="btn btn-info" title="Ver todas as notificações" >
+                    Todas notificações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -102,3 +102,51 @@ body {
 	bottom:80px;
 	right:30px;
 }
+
+.upload-btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.upload-btn-wrapper .btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 4px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input.inputbase {
+  font-size: 40px;
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.upload-btn-wrapper input[type=file] {
+  width: 200px;
+}
+
+.pic-thumbnail.mx-2.extra {
+  max-height: 80px;
+  max-width: 80px;
+}
+
+div.post.user div.row div h4 {
+  margin-bottom: 0;
+}
+
+div.post.user div.row div h6 {
+  color: gray;
+}
+
+div.post.user div.row div span.seguidores {
+  color: gray;
+}
+
+.post.user {
+  border: none;
+}

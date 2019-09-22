@@ -36,20 +36,36 @@
             <hr>
             {% endif %}
             <div id="time_line">
-                <h2>Contos...</h2>
+                <h2>{{ termo }}...</h2>
                 <hr>
                 <div id="tl_content">
 
-                    {% include 'posts.html' %}
+                    {% for u in usuarios %}
+                    <div class="post user">
+                        <div class="row px-3 py-3">
+                            <div class="pic-thumbnail mx-2 extra">
+                                <img class="img-fluid"
+                                        src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                                        alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h4>{{ u.nome_real() }}</h4>
+                                <h6>@{{ u.nome_usuario() }}</h6>
+                                <span class="seguidores">{{ u.cont_seguidores() }} seguidores; </span>
+                                <span>{{ u.biografia() }}</span>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    {% endfor %}
 
                 </div>
             </div>
-            <hr>
-            <div>
+            <!-- <div>
                 <button id="btn-feed" type="button" class="btn btn-dark">
                     Carregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
                 </button>
-            </div>
+            </div> -->
         </div>
         <div class="col-lg-4 col-12">
 
