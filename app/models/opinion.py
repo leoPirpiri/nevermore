@@ -26,7 +26,6 @@ class Opinion(Base):
         return self.__tmp_dono
 
 
-
 def __criar_topico(nome_topico):
     if db_wrapper.get_topico_pk(nome_topico) is None:
         db_wrapper.inserir_topico({'nome_topico': nome_topico})
@@ -55,8 +54,12 @@ def __comment_post_wrapper(instancia={}):
     return C(instancia=instancia) if instancia['comentario'] else P(instancia=instancia)
 
 
-
 def buscar_opinioes_por_topico(topico):
     ''' Retorna uma lista de Opiniões que estão marcados com o tópico especificado.
     '''
     return db_wrapper.get_opinioes_topico_pk(topico, autowrap=__comment_post_wrapper)
+
+
+def buscar_trend_topics():
+    return db_wrapper.get_trend_topics()
+

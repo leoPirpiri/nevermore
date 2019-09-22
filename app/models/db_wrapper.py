@@ -218,9 +218,22 @@ def get_topico_pk(nome_topico):
     return ('SELECT * FROM topico WHERE nome_topico = %s', nome_topico)
 
 
-
-
-
+'''
+Retorna um dicionário para os tópicos do momento.
+'''
+@default_fetch_many
+def get_trend_topics():
+    return ( """SELECT count(top.nome_topico) as quan, top.nome_topico as nome
+                FROM public.citacao_topico as cit,
+                     public.topico as top,
+                     public.opiniao as op
+                WHERE cit.id_post = op.id_post
+                     and cit.nome_topico = top.nome_topico
+                     and (DATE_PART('day', now()::timestamp - op.data_post::timestamp) * 24 +
+                              DATE_PART('hour', now()::timestamp - op.data_post::timestamp)) < 4
+                group by (top.nome_topico, top.nome_topico)
+                order by quan desc
+                limit 10;""", [])
 
 
 '''

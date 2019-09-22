@@ -1,10 +1,13 @@
 from flask import render_template, g, request, redirect, url_for
 from app import app
 from app.auth import login_required, logout_required
+
 from app.models.post import get_timeline
 from app.models.opinion import buscar_opinioes_por_topico
 
 from app.controllers.opinions import _opinar
+from app.models import opinion
+
 
 @app.route("/index/")
 @app.route("/")
@@ -15,7 +18,7 @@ def index():
 @app.route("/home/")
 @login_required
 def home():
-    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True)
+    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics())
 
 @app.route("/topico/")
 @login_required
@@ -29,7 +32,7 @@ def busca_topico():
 @app.route("/perfil/")
 @login_required
 def perfil():
-    return render_template("perfil.html")
+    return render_template("perfil.html", assuntos = opinion.buscar_trend_topics())
 
 @app.route("/post/")
 @login_required
@@ -41,3 +44,4 @@ def post():
 def opinar():
     """Permite ao usuário emitir uma opinião"""
     return _opinar()
+ 
