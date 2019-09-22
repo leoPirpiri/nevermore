@@ -79,6 +79,11 @@ class User(Base):
         if upd_cont_seguidores:
             d['cont_seguidores'] = len(self.get_seguidores())
         db_wrapper.update_usuario(d)
+    
+    def e_valido(self):
+        ''' Método boilerplate para verificar se uma instância é válida.
+        '''
+        return not self.pk()[0] is None
 
 
 def get_user(nome_usuario) -> User:
@@ -86,7 +91,7 @@ def get_user(nome_usuario) -> User:
     Retorna None caso o usuário não exista.
     '''
     u = User(nome_usuario=nome_usuario)
-    return None if u.pk()[0] is None else u
+    return u if u.e_valido() else None
 
 
 

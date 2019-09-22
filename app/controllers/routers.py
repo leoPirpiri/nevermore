@@ -1,11 +1,11 @@
-from flask import render_template, g, request, redirect, url_for
+from flask import render_template, g, request, redirect, url_for, send_from_directory
 from app import app
 from app.auth import login_required, logout_required
 
 from app.models.post import get_timeline
 from app.models.opinion import buscar_opinioes_por_topico
 from app.models.notification import get_notificacoes_usuario
-from app.models.user import buscar_usuarios_por_string
+from app.models import user
 
 from app.controllers.opinions import _opinar
 from app.models import opinion
@@ -33,7 +33,7 @@ def busca():
         elif termo[0] == '#':
             return render_template("home.html", logged_user = g.user, posts=buscar_opinioes_por_topico(termo[1:]), opinar_form=False, notificacoes = get_notificacoes_usuario(g.user), termo=termo, assuntos = opinion.buscar_trend_topics())
         else:
-            return render_template("usuarios.html", usuarios=buscar_usuarios_por_string(termo), notificacoes = get_notificacoes_usuario(g.user), termo=termo)
+            return render_template("usuarios.html", usuarios=user.buscar_usuarios_por_string(termo), notificacoes = get_notificacoes_usuario(g.user), termo=termo)
     return redirect(url_for('index'))
 
 @app.route("/perfil/")
@@ -52,3 +52,23 @@ def opinar():
     """Permite ao usuário emitir uma opinião"""
     return _opinar()
  
+
+@app.route("/foto_perfil/<nome_usuario>")
+def foto_perfil(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if not u is None and u.e_valido() and not u.foto() is None:
+        from werkzeug.exceptions import NotFound
+        basedir = app.config['IMAGES_USERS_ABS']
+        
+        try:
+            return send_from_directory(basedir, u.foto())
+        except NotFound as nf:
+            pass
+
+    return redirect(url_for('static', filename='images_app/default-user.png'))
