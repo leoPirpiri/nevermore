@@ -68,8 +68,13 @@
             </ul>
             <!-- Painel de abas -->
             <div class="tab-content p-3">
+
+                {% for message in get_flashed_messages() %}
+                <div style="color: lightgray;" class="flash">{{ message }}</div>
+                {% endfor %}
+
                 <div class="tab-pane active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                    <form id="form-login" action="">
+                    <form id="form-login" action="/auth/login" method="POST">
                         <div class="row">
                             <div class="group-form col-lg-12 col-md-6 col-sm-6 col-12 py-2">
                                 <div class="input-group">
@@ -106,7 +111,7 @@
                     </form>
                 </div>
                 <div class="tab-pane" id="cadastrar" role="tabpanel" aria-labelledby="cadastrar-tab">
-                    <form id="form-signup" action="">
+                    <form id="form-signup" action="/auth/register" method="POST">
                         <div class="row">
                             <div class="group-form col-lg-12 col-md-6 col-sm-6 col-12 py-2">
                                 <div class="input-group">

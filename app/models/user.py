@@ -29,8 +29,10 @@ class User(Base):
         self.senha = self.foto = self.visibilidade = self.cont_seguidores = Stub()
 
         if id_usuario is None and 'nome_usuario' in kwargs:
-            kwargs['instancia'] = db_wrapper.get_usuario_nome_usuario(kwargs['nome_usuario'])
-            self.id_usuario = kwargs['instancia']['id_usuario']
+            inst = db_wrapper.get_usuario_nome_usuario(kwargs['nome_usuario'])
+            if not inst is None:
+                self.id_usuario = inst['id_usuario']
+                kwargs['instancia'] = inst
 
         super().__init__(pk='id_usuario', *args, **kwargs)
 
@@ -79,6 +81,14 @@ class User(Base):
         db_wrapper.update_usuario(d)
 
 
+def get_user(nome_usuario) -> User:
+    ''' Obtém uma instância de usuário para um dado nome.
+    Retorna None caso o usuário não exista.
+    '''
+    u = User(nome_usuario=nome_usuario)
+    return None if u.pk()[0] is None else u
+
+
 
 def registrar_usuario(dados: dict, lazy: bool = True) -> 'User':
     ''' Registra um novo usuário no sistema.
@@ -86,7 +96,9 @@ def registrar_usuario(dados: dict, lazy: bool = True) -> 'User':
     Se lazy=True, então retorna uma instância preguiçosa de Usuário.
     Do contrário, inicializa-o com as informações contidas em 'dados' (Menos seguro).
     '''
-    q = db_wrapper.inserir_usuario(dados)[0]
+    d = {'biografia': "", "foto": "", "visibilidade": True, "nome_real": "", "senha": ""}
+    d.update(dados)
+    q = db_wrapper.inserir_usuario(d)[0]
     return User(q) if lazy else User(q, instancia=dados)
 
 def buscar_usuarios_por_string(occur):

@@ -20,30 +20,38 @@ __tmp_cur = None
 
 def commit_changes(force=False):
     global __tmp_conn, __tmp_cur
-    if not has_request_context():
+    if not has_request_context() and not __tmp_conn is None:
         __tmp_conn.commit()
     elif 'dba' in g and force:
         g.dba.commit()
 
-def get_db(discardPrevious=True) -> psycopg2.extras.DictCursor:
+def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     global __tmp_conn, __tmp_cur
     """Obtém e levanta, se necessário, uma conexão ao banco de dados.
     """
+    def getc(c, p=None, s=current_app.config):
+        return s[c] if c in s else p
+    
+    dbname = getc('DATABASE_NAME', 'postgres')
+    dbuser = getc('DATABASE_USER', 'postgres')
+    dbpass = getc('DATABASE_PASS')
 
     # Caso não esteja usando Flask
     if not has_request_context():
         if __tmp_conn is None:
-            __tmp_conn = psycopg2.connect(dbname="projbd", user="vk")
+            __tmp_conn = psycopg2.connect(dbname=dbname, user=dbuser, password=dbpass)
         if __tmp_cur is None:
             __tmp_cur = __tmp_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         return __tmp_cur
     
     if 'dba' not in g:
-        g.dba = psycopg2.connect(dbname="projbd", user="vk")
+        g.dba = psycopg2.connect(dbname='projbd', user=dbuser, password=dbpass)
     if 'cur' not in g:
         g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    elif discardPrevious:
-        g.cur.fetchall()
+    
+    if discardPrevious:
+        g.cur.close()
+        g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     return g.cur
 
@@ -178,7 +186,9 @@ Retorna um dicionário para uma instância de Comentário.
 '''
 @default_fetch_one
 def get_comentario_pk(id_post):
-    return ('SELECT * FROM opiniao INNER JOIN comentario ON opiniao.id_post = comentario.id_post WHERE comentario.id_post = %s', id_post)
+    return ('SELECT * FROM opiniao '
+    'INNER JOIN comentario ON opiniao.id_post = comentario.id_post '
+    'WHERE comentario.id_post = %s', id_post)
 
 
 
@@ -208,9 +218,22 @@ def get_topico_pk(nome_topico):
     return ('SELECT * FROM topico WHERE nome_topico = %s', nome_topico)
 
 
-
-
-
+'''
+Retorna um dicionário para os tópicos do momento.
+'''
+@default_fetch_many
+def get_trend_topics():
+    return ( """SELECT count(top.nome_topico) as quan, top.nome_topico as nome
+                FROM public.citacao_topico as cit,
+                     public.topico as top,
+                     public.opiniao as op
+                WHERE cit.id_post = op.id_post
+                     and cit.nome_topico = top.nome_topico
+                     and (DATE_PART('day', now()::timestamp - op.data_post::timestamp) * 24 +
+                              DATE_PART('hour', now()::timestamp - op.data_post::timestamp)) < 4
+                group by (top.nome_topico, top.nome_topico)
+                order by quan desc
+                limit 10;""", [])
 
 
 '''
@@ -218,42 +241,53 @@ Retorna uma lista de dicionários de notificações do usuário.
 '''
 @default_fetch_many
 def get_notificacoes_usuario_pk(id_usuario):
-    return ('SELECT * FROM notificacao WHERE dono_notificacao = %s ORDER BY data_evento DESC', [id_usuario])
+    return ('SELECT * FROM notificacao '
+    'WHERE dono_notificacao = %s ORDER BY data_evento DESC', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de postagens do usuário.
 '''
 @default_fetch_many
 def get_postagens_usuario_pk(id_usuario):
-    return ('SELECT * FROM opiniao INNER JOIN postagem ON opiniao.id_post = postagem.id_post WHERE opiniao.dono = %s ORDER BY opiniao.data_post DESC', [id_usuario])
+    return ('SELECT * FROM opiniao '
+    'INNER JOIN postagem ON opiniao.id_post = postagem.id_post '
+    'WHERE opiniao.dono = %s ORDER BY opiniao.data_post DESC', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário segue.
 '''
 @default_fetch_many
 def get_seguindo_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 0 AND relacao.origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao '
+    'INNER JOIN usuario ON usuario.id_usuario = relacao.alvo '
+    'WHERE relacao.tipo = 0 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário solicitou para seguir.
 '''
 @default_fetch_many
 def get_solicitou_seguir_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 1 AND relacao.origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao '
+    'INNER JOIN usuario ON usuario.id_usuario = relacao.alvo '
+    'WHERE relacao.tipo = 1 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que este usuário bloqueou.
 '''
 @default_fetch_many
 def get_bloqueados_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo WHERE relacao.tipo = 2 AND relacao.origem = %s', [id_usuario])
+    return ('SELECT * FROM relacao '
+    'INNER JOIN usuario ON usuario.id_usuario = relacao.alvo '
+    'WHERE relacao.tipo = 2 AND relacao.origem = %s', [id_usuario])
 
 '''
 Retorna uma lista de dicionários de usuários que seguem este usuário.
 '''
 @default_fetch_many
 def get_seguidores_usuario_pk(id_usuario):
-    return ('SELECT * FROM relacao INNER JOIN usuario ON usuario.id_usuario = relacao.origem WHERE relacao.tipo = 0 AND relacao.alvo = %s', [id_usuario])
+    return ('SELECT * FROM relacao '
+    'INNER JOIN usuario ON usuario.id_usuario = relacao.origem '
+    'WHERE relacao.tipo = 0 AND relacao.alvo = %s', [id_usuario])
 
 
 
@@ -264,7 +298,9 @@ Retorna uma lista de dicionários de comentários da postagem.
 '''
 @default_fetch_many
 def get_comentarios_postagem_pk(id_postagem):
-    return ('SELECT * FROM opiniao INNER JOIN comentario ON opiniao.id_post = comentario.id_post WHERE comentario.id_postagem = %s', [id_postagem])
+    return ('SELECT * FROM opiniao '
+    'INNER JOIN comentario ON opiniao.id_post = comentario.id_post '
+    'WHERE comentario.id_postagem = %s', [id_postagem])
 
 
 
@@ -273,7 +309,9 @@ Retorna uma lista de dicionários de opiniões que contém o tópico especificad
 '''
 @default_fetch_many
 def get_opinioes_topico_pk(nome_topico):
-    return ('SELECT * FROM opiniao INNER JOIN citacao_topico ON opiniao.id_post = citacao_topico.id_post WHERE citacao_topico.nome_topico = %s ORDER BY opiniao.data_post DESC', [nome_topico])
+    return ('SELECT * FROM opiniao '
+            'INNER JOIN citacao_topico ON opiniao.id_post = citacao_topico.id_post '
+            'WHERE citacao_topico.nome_topico = %s ORDER BY opiniao.data_post DESC', [nome_topico])
 
 
 '''
@@ -282,7 +320,21 @@ Retorna uma lista de dicionários de opiniões que contém o tópico especificad
 @default_fetch_many
 def get_usuarios_busca(substring):
     substring = "%" + substring + "%"
-    return ('SELECT * FROM usuario WHERE nome_usuario ILIKE %s OR nome_real ILIKE %s OR biografia ILIKE %s ORDER BY cont_seguidores DESC', [substring, substring, substring])
+    return ('SELECT * FROM usuario '
+    'WHERE nome_usuario ILIKE %s OR nome_real ILIKE %s OR biografia ILIKE %s '
+    'ORDER BY cont_seguidores DESC', [substring, substring, substring])
+
+
+'''
+Retorna uma lista de dicionários de usuários que este usuário segue.
+'''
+@default_fetch_many
+def get_usuario_timeline_pk(id_usuario):
+    return ('SELECT * FROM'
+    '((relacao INNER JOIN usuario ON usuario.id_usuario = relacao.alvo) '
+    'INNER JOIN opiniao ON relacao.alvo = opiniao.dono) '
+    'WHERE opiniao.comentario = FALSE AND relacao.tipo = 0 AND relacao.origem = %s '
+    'ORDER BY opiniao.data_post DESC', [id_usuario])
 
 
 

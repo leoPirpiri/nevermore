@@ -3,74 +3,88 @@
 <div id="content_home" class="container bg-white py-5" align="center">
     <div class="row">
         <div class="col-lg-8 col-12">
-            <div id="post" class="row">
-                <div class="col-2 p-0">
-                    <div class="pic-thumbnail">
-                        <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                             alt="Foto do usuário">
+            {% if opinar_form %}
+            <form id="opiniao" action="/opinar" method="POST">
+                <div id="post" class="row">
+                    <div class="col-2 p-0">
+                        <div class="pic-thumbnail">
+                            <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                                alt="Foto do usuário">
+                        </div>
+                    </div>
+                    <div class="input-group col-9 p-0">
+                            <input type="hidden" name="tipo" value="POST">
+                            <div class="col-12">
+                                <textarea id="texto" name="texto" class="form-control" style="resize:none;"
+                                        placeholder="No quê você está pensando?"></textarea>
+                            </div>
+                            <div class="col-12" align="right">
+                                <button class="btn btn-outline-secondary" type="Submit">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Peck
+                                </button>
+                            </div>
                     </div>
                 </div>
-                <div class="input-group col-9 p-0">
-                    <div class="col-12">
-                        <textarea class="form-control" style="resize:none;"
-                                  placeholder="No quê você está pensando?"></textarea>
-                    </div>
-                    <div class="col-12" align="right">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="fa fa-commenting" aria-hidden="true"></i> Peck
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
             <hr>
+            {% endif %}
             <div id="time_line">
                 <h2>Contos...</h2>
                 <hr>
                 <div id="tl_content">
-                    <div class="post">
-                        <div class="row px-3 pt-3">
-                            <div class="pic-thumbnail mx-2">
-                                <img class="img-fluid"
-                                     src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                                     alt="Foto do usuário">
-                            </div>
-                            <div align="left">
-                                <h4>Nome do usuário</h4>
-                                <h6>@nickname</h6>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="post-content">
-                            <p>Eu voto no bem, UFPB acima de tudo, Deus acima de todos. #UlyssesReitor. O mito vem
-                                aí!</p>
-                        </div>
-                    </div>
+
+                    {% include 'posts.html' %}
+
                 </div>
             </div>
             <hr>
             <div>
                 <button id="btn-feed" type="button" class="btn btn-dark">
-                    Garregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
+                    Carregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
                 </button>
             </div>
         </div>
         <div class="col-lg-4 col-12">
+            <div class="accordion" id="accordion_notificacao">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h4 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fa fa-bullhorn" aria-hidden="true"></i> NOTIFICAÇÕES
+                            </button>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne"
+                         data-parent="#accordion_notificacao">
+                        <div class="card-body">
+                            <div id="notificacoes">
+                                Notificações aqui
+                            </div>
+                            <button type="button" class="btn btn-info" title="Ver todas a notificações" >
+                                Todas notificações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h2>Assuntos do momento</h2>
             <hr>
             <div id="trends" align="left">
                 <ol class="list-group">
+                    {% if assuntos %}
+                    {% for trends in assuntos%}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #UlyssesReitor
-                        <span class="badge badge-gothic badge-pill">1.206</span>
+                        #{{ trends.nome }}
+                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
                     </li>
+                    {% endfor %}
+                    {% else %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #CãoBemArticulado
-                        <span class="badge badge-gothic badge-pill">756</span>
+                        #Sem momentos
+                        <span class="badge badge-gothic badge-pill">00000</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #AllanDiretor
-                        <span class="badge badge-gothic badge-pill">588</span>
-                    </li>
+                    {% endif %}
                 </ol>
             </div>
         </div>
