@@ -118,7 +118,6 @@ body {
   font-weight: bold;
 }
 
-
 .upload-btn-wrapper input.inputbase {
   font-size: 40px;
   opacity: 0;
@@ -129,4 +128,25 @@ body {
 
 .upload-btn-wrapper input[type=file] {
   width: 200px;
+}
+
+.pic-thumbnail.mx-2.extra {
+  max-height: 80px;
+  max-width: 80px;
+}
+
+div.post.user div.row div h4 {
+  margin-bottom: 0;
+}
+
+div.post.user div.row div h6 {
+  color: gray;
+}
+
+div.post.user div.row div span.seguidores {
+  color: gray;
+}
+
+.post.user {
+  border: none;
 }

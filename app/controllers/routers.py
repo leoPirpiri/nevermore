@@ -5,6 +5,7 @@ from app.auth import login_required, logout_required
 from app.models.post import get_timeline
 from app.models.opinion import buscar_opinioes_por_topico
 from app.models.notification import get_notificacoes_usuario
+from app.models.user import buscar_usuarios_por_string
 
 from app.controllers.opinions import _opinar
 from app.models import opinion
@@ -21,13 +22,17 @@ def index():
 def home():
     return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics(), notificacoes = get_notificacoes_usuario(g.user))
 
-@app.route("/topico/")
+@app.route("/busca/")
 @login_required
-def busca_topico():
+def busca():
     if request.method == "GET":
-        topico = request.args.get("topico", None)
-        if not topico is None:
-            return render_template("home.html", posts=buscar_opinioes_por_topico(topico), opinar_form=False, notificacoes = get_notificacoes_usuario(g.user))
+        termo = request.args.get("termo", None)
+        if termo is None or len(termo) == 0:
+            return redirect(url_for('index'))
+        elif termo[0] == '#':
+            return render_template("home.html", posts=buscar_opinioes_por_topico(termo[1:]), opinar_form=False, notificacoes = get_notificacoes_usuario(g.user), termo=termo)
+        else:
+            return render_template("usuarios.html", usuarios=buscar_usuarios_por_string(termo), notificacoes = get_notificacoes_usuario(g.user), termo=termo)
     return redirect(url_for('index'))
 
 @app.route("/perfil/")

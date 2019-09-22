@@ -32,8 +32,12 @@
                         <a class="nav-link" href="#">#Explore</a>
                     </li>
                 </ul>
-                <form action="/topico" method="get" class="form-inline my-2 my-lg-0">
-                    <input name="topico" id="topico" class="form-control mr-sm-2" type="search" placeholder="#trends" aria-label="Search">
+                <form action="/busca" method="get" class="form-inline my-2 my-lg-0">
+                    {% if termo %}
+                    <input name="termo" id="termo" class="form-control mr-sm-2" type="search" placeholder="#trends" aria-label="Search" value="{{ termo }}">
+                    {% else %}
+                    <input name="termo" id="termo" class="form-control mr-sm-2" type="search" placeholder="#trends" aria-label="Search">
+                    {% endif %}
                     <button type="submit" class="btn btn-secondary">Pesquisa</button>
                 </form>
             </div>

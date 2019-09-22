@@ -1,0 +1,96 @@
+{% extends "header_home.html" %}
+{%block conteudo %}
+<div id="content_home" class="container bg-white py-5" align="center">
+    <div class="row">
+        <div class="col-lg-8 col-12">
+            {% if opinar_form %}
+            <form id="opiniao" action="/opinar" method="POST" enctype=multipart/form-data>
+                <div id="post" class="row">
+                    <div class="col-2 p-0">
+                        <div class="pic-thumbnail">
+                            <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                                alt="Foto do usuário">
+                        </div>
+                    </div>
+                    <div class="input-group col-9 p-0">
+                        <input type="hidden" name="tipo" value="POST">
+                        <div class="col-12">
+                            <textarea id="texto" name="texto" class="form-control" style="resize:none;"
+                                    placeholder="No quê você está pensando?"></textarea>
+                        </div>
+                        <div class="col-12" align="right">
+                            <div class="upload-btn-wrapper">
+                                <!--
+                                <button class="btn">Upload a photo</button>
+                                <input class="inputbase" type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
+                                -->
+                                <input type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
+                            </div>
+                            <button class="btn btn-outline-secondary" type="Submit">
+                                <i class="fa fa-commenting" aria-hidden="true"></i> Peck
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr>
+            {% endif %}
+            <div id="time_line">
+                <h2>{{ termo }}...</h2>
+                <hr>
+                <div id="tl_content">
+
+                    {% for u in usuarios %}
+                    <div class="post user">
+                        <div class="row px-3 py-3">
+                            <div class="pic-thumbnail mx-2 extra">
+                                <img class="img-fluid"
+                                        src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                                        alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h4>{{ u.nome_real() }}</h4>
+                                <h6>@{{ u.nome_usuario() }}</h6>
+                                <span class="seguidores">{{ u.cont_seguidores() }} seguidores; </span>
+                                <span>{{ u.biografia() }}</span>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <!-- <div>
+                <button id="btn-feed" type="button" class="btn btn-dark">
+                    Carregar <i class="fa fa-plus-square-o" aria-hidden="true"></i> conteúdo
+                </button>
+            </div> -->
+        </div>
+        <div class="col-lg-4 col-12">
+
+            {% include 'notifications.html' %}
+
+            <h2>Assuntos do momento</h2>
+            <hr>
+            <div id="trends" align="left">
+                <ol class="list-group">
+                    {% if assuntos %}
+                    {% for trends in assuntos%}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #{{ trends.nome }}
+                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #Sem momentos
+                        <span class="badge badge-gothic badge-pill">00000</span>
+                    </li>
+                    {% endif %}
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
