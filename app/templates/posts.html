@@ -8,9 +8,8 @@
         </div>
         <div align="left">
             <h4>{{ pt.get_dono().nome_real() }}</h4>
-            <h6>@{{ pt.get_dono().nome_usuario() }}</h6>
+            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou... </h6>
         </div>
-        <div style="display: none">{{ pt.data_post() }}</div>
     </div>
     <hr>
     <div class="post-content">
