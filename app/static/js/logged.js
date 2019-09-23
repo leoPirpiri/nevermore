@@ -9,18 +9,22 @@ $(document).ready(function() {
             var post_id = this.id
             if (content!=''){
                 console.log(content)
-                $("<div style='display: none;'>"+content+"</div>").appendTo('#comentarios'+post_id).show("slow")
-//                $.post("/teste", {
-//                    texto: content,
-//                    tipo: 'COMMENT',
-//                    post: post_id
-//                }, function(msg){
-//                    $('#'post_id).val('')
-//                    $("<div style='display: none;'>"+content+"</div>").appendTo('#comentarios'+post_id).show()
-//                    console.log(msg);
-//                })
+                $.post("/comentar", {
+                    texto: content,
+                    tipo: 'COMMENT',
+                    post: post_id
+                }, function(msg){
+                    $("<div class='comentario row my-1 py-1'>"+
+                        "<div class='pic-thumbnail col-2'>"+
+                            "<img class='img-fluid' src='/static/images_app/default-user.png' alt='Foto do usuário'>"+
+                        "</div><div class='col-10' align='left'><p class='my-0' title='Comentou às "+msg.data_post+"'><a style='font-weight: bold' href='/perfil/"+
+                        msg.dono+"'>@"+$('#user').val()+": </a> "+
+                        content+"</p></div>"+
+                        "</div>")
+                        .appendTo('#comentarios'+post_id);
+                })
             }
-            $('#'+post_id).val('')
+            $('#'+post_id).val('');
         }
     });
 });

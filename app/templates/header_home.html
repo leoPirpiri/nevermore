@@ -12,6 +12,7 @@
     {% block conteudo %}
     {% endblock %}
     <div id="voltarTopo">
+        <input type="hidden" id="user" value="{{ logged_user.nome_usuario() }}">
         <a href="#" id="topo"> <i class="fa fa-chevron-up fa-4x" aria-hidden="false"></i> </a>
     </div>
     <script type="text/javascript" defer="defer" src="{{ url_for('static', filename='js/logged.js') }}"></script>

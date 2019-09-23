@@ -1,4 +1,4 @@
-from flask import render_template, g, request, redirect, url_for
+from flask import render_template, g, request, redirect, url_for, jsonify
 from app import app
 from app.auth import login_required, logout_required
 
@@ -53,8 +53,8 @@ def opinar():
     """Permite ao usuário emitir uma opinião"""
     return _opinar()
  
-@app.route("/teste", methods=("GET", "POST"))
+@app.route("/comentar", methods=("GET", "POST"))
 def json_c():
     retorno = _opinar()
     retorno['data_post'] = formatDate(retorno['data_post'])
-    return json.dumps(retorno)
+    return jsonify(retorno)
