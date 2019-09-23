@@ -16,7 +16,12 @@ from functools import wraps
 
 def render_template(*args, **kwargs):
     if usuario_logado():
-        return rendert(logged_user = g.user, notificacoes = get_notificacoes_usuario(g.user), assuntos = opinion.buscar_trend_topics(), *args, **kwargs)
+        return rendert(
+            logged_user = g.user,
+            notificacoes = get_notificacoes_usuario(g.user),
+            assuntos = opinion.buscar_trend_topics(),
+            formatDate=formatDate,
+            *args, **kwargs)
     else:
         return rendert(*args, **kwargs)
 
