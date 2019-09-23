@@ -17,24 +17,29 @@ def get_extension(filename):
 def allowed_file(filename):
     return get_extension(filename) in ALLOWED_EXTENSIONS
 
+
+def _obter_foto(param='foto'):
+    foto = request.files.get(param, None)
+    
+    if not foto is None and allowed_file(foto.filename):
+        fext = ''.join(random.choices(RND_STR, k=30)) + '.' + get_extension(foto.filename)
+        basedir = app.config['IMAGES_USERS_ABS']
+        os.makedirs(basedir, exist_ok=True)
+        foto.save(os.path.join(basedir, fext))
+        return fext
+    else:
+        return None
+
+
 def _opinar():
     """Permite ao usuário emitir uma opinião"""
     if request.method == "POST":
         tipo = request.form.get("tipo", None)
         texto = request.form.get("texto", None)
-        foto = request.files.get("foto", None)
         post = request.form.get("post", None)
         user = g.user
+        foto = _obter_foto()
         
-        if not foto is None and allowed_file(foto.filename):
-            fext = ''.join(random.choices(RND_STR, k=30)) + '.' + get_extension(foto.filename)
-            basedir = os.path.join(app.static_folder, app.config['IMAGES_USERS'])
-            os.makedirs(basedir, exist_ok=True)
-            foto.save(os.path.join(basedir, fext))
-            foto = fext
-        else:
-            foto = None
-
         if texto is None or len(texto) > 500:
             return "Invalid length."
 

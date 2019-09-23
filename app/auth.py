@@ -18,11 +18,14 @@ from app.initdb import get_db
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
+def usuario_logado():
+    return not g.user is None
+
 def login_required(view):
     """View decorator that redirects anonymous users to the login page."""
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs):
-        if g.user is None:
+        if not usuario_logado():
             return redirect(url_for("index"))
         return view(*args, **kwargs)
     return wrapped_view
@@ -32,7 +35,7 @@ def logout_required(view):
     """View decorator that redirects authenticated users to the home page."""
     @functools.wraps(view)
     def wrapped_view(*args, **kwargs):
-        if not g.user is None:
+        if usuario_logado():
             return redirect(url_for("home"))
         return view(*args, **kwargs)
     return wrapped_view

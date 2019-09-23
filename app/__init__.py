@@ -9,6 +9,9 @@ def create_app():
         IMAGES_USERS = 'IMAGES_USERS'
     )
     app.config.from_pyfile(path.join(rpath, 'app.cfg'))
+    app.config.from_mapping(
+        IMAGES_USERS_ABS = path.join(app.static_folder, app.config['IMAGES_USERS'])
+    )
     init_app(app)
 
     from . import auth

@@ -4,8 +4,19 @@
     <div class="row">
         <div class="col-lg-4 col-12">
             <div id="infors_perfil">
-                <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
-                     alt="Foto do usuário">
+
+                <form id="form-input-img" method="POST" enctype=multipart/form-data>
+                    <div class="image-upload">
+                        <label for="foto">
+                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}" alt="Foto do usuário">
+                            <div class="imgupldh"><div>Clique para atualizar</div></div>
+                        </label>
+                    
+                        <input id="foto" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" type="file"/>
+                    </div>
+                    <script type="text/javascript" src="{{ url_for('static', filename='js/photo.js') }}"></script>
+                </form>
+
                 <div align="left">
                     <h4>
                         <button type="button" class="btn" id="user_config" title="Alterar algumas informações"><i class="fa fa-cogs" aria-hidden="true"></i></button>
@@ -58,7 +69,7 @@
             <div id="post" class="row">
                 <div class="col-2 p-0">
                     <div class="pic-thumbnail">
-                        <img class="img-fluid" src="{{ url_for('static', filename='images_app/default-user.png') }}"
+                        <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
                              alt="Foto do usuário">
                     </div>
                 </div>
