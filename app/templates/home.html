@@ -8,27 +8,30 @@
                 <div id="post" class="row">
                     <div class="col-2 p-0">
                         <div class="pic-thumbnail">
-                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
-                                alt="Foto do usuário">
+                            <img class="img-fluid"
+                                 src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
+                                 alt="Foto do usuário">
                         </div>
                     </div>
                     <div class="input-group col-9 p-0">
                         <input type="hidden" name="tipo" value="POST">
                         <div class="col-12">
                             <textarea id="texto" name="texto" class="form-control" style="resize:none;"
-                                    placeholder="No quê você está pensando?"></textarea>
+                                      placeholder="No quê você está pensando?" required></textarea>
                         </div>
-                        <div class="col-12" align="right">
-                            <div class="upload-btn-wrapper">
-                                <!--
-                                <button class="btn">Upload a photo</button>
-                                <input class="inputbase" type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
-                                -->
-                                <input type="file" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" />
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="input_file_peck" aria-describedby="submit_peck"
+                                           name="foto" accept="image/png, image/jpeg, image/jpg, image/gif">
+                                    <label class="custom-file-label" for="input_file_peck">Escolher arquivo</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit" id="submit_peck">
+                                        <i class="fa fa-commenting" aria-hidden="true"></i> Peck
+                                    </button>
+                                </div>
                             </div>
-                            <button class="btn btn-outline-secondary" type="Submit">
-                                <i class="fa fa-commenting" aria-hidden="true"></i> Peck
-                            </button>
                         </div>
                     </div>
                 </div>

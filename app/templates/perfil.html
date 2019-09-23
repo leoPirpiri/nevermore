@@ -4,7 +4,6 @@
     <div class="row">
         <div class="col-lg-4 col-12">
             <div id="infors_perfil">
-
                 <form id="form-input-img" method="POST" enctype=multipart/form-data>
                     <div class="image-upload">
                         <label for="foto">
@@ -80,26 +79,40 @@
             </div>
         </div>
         <div class="col-lg-8 col-12">
-            <div id="post" class="row">
-                <div class="col-2 p-0">
-                    <div class="pic-thumbnail">
-                        <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
-                             alt="Foto do usuário">
+            {% if opinar_form %}
+            <form id="opiniao" action="/opinar" method="POST" enctype=multipart/form-data>
+                <div id="post" class="row">
+                    <div class="col-2 p-0">
+                        <div class="pic-thumbnail">
+                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
+                                alt="Foto do usuário">
+                        </div>
+                    </div>
+                    <div class="input-group col-9 p-0">
+                        <input type="hidden" name="tipo" value="POST">
+                        <div class="col-12">
+                            <textarea id="texto" name="texto" class="form-control" style="resize:none;"
+                                    placeholder="No quê você está pensando?" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="input_file_peck" aria-describedby="submit_peck"
+                                           name="foto" accept="image/png, image/jpeg, image/jpg, image/gif">
+                                    <label class="custom-file-label" for="input_file_peck">Escolher arquivo</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit" id="submit_peck">
+                                        <i class="fa fa-commenting" aria-hidden="true"></i> Peck
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="input-group col-9 p-0">
-                    <div class="col-12">
-                        <textarea class="form-control" style="resize:none;"
-                                  placeholder="No quê você está pensando?"></textarea>
-                    </div>
-                    <div class="col-12" align="right">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="fa fa-commenting" aria-hidden="true"></i> Peck
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
             <hr>
+            {% endif %}
             <div id="time_line">
                 <h2>Meus Contos...</h2>
                 <hr>

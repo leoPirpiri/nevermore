@@ -29,7 +29,11 @@ def index():
 @app.route("/home/")
 @login_required
 def home():
-    return render_template("home.html", posts=get_timeline(g.user), opinar_form=True, assuntos = opinion.buscar_trend_topics())
+    return render_template("home.html",
+                            posts=get_timeline(g.user),
+                            opinar_form=True,
+                            assuntos = opinion.buscar_trend_topics()
+                            )
 
 
 @app.route("/busca/")
@@ -48,12 +52,18 @@ def busca():
 @app.route("/perfil/")
 @login_required
 def perfil():
-    return render_template("perfil.html", posts=g.user.get_postagens(), assuntos = opinion.buscar_trend_topics())
+    return render_template("perfil.html",
+                           posts=g.user.get_postagens(),
+                           opinar_form=True,
+                           assuntos = opinion.buscar_trend_topics()
+                        )
+
 
 @app.route("/post/")
 @login_required
 def post():
     return render_template("perfil.html")
+
 
 @app.route("/opinar", methods=("GET", "POST"))
 @login_required
@@ -89,7 +99,7 @@ def foto_perfil(nome_usuario, id_usuario=None):
         u = user.User(id_usuario)
     else:
         u = None
-    
+
     from os import path
     basedir = app.config['IMAGES_USERS_ABS']
     vpath = path.join(basedir, u.foto())
