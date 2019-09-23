@@ -1,0 +1,62 @@
+{% extends "header_home.html" %}
+{%block conteudo %}
+<div id="content_comunidade" class="container bg-white py-5" align="center">
+    <div class="row">
+        <div class="col-lg-8 col-12">
+            <div id="comunidade">
+                <h2>Comunidade</h2>
+                <hr>
+                <div id="cm_content" class="row">
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <h4>Seguidores</h4>
+                        <hr>
+                        <div class="row px-3 pt-3">
+                            <div class="pic-thumbnail mx-2">
+                                <img class="img-fluid"
+                                     src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                     alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h4><a href="/perfil/">Leandro</a></h4>
+                                <h6>@leo</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <h4>Seguindo</h4>
+                        <hr>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <h4>Bloqueados</h4>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12">
+
+            {% include 'notifications.html' %}
+
+            <h2>Assuntos do momento</h2>
+            <hr>
+            <div id="trends" align="left">
+                <ol class="list-group">
+                    {% if assuntos %}
+                    {% for trends in assuntos%}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #{{ trends.nome }}
+                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        #Sem momentos
+                        <span class="badge badge-gothic badge-pill">00000</span>
+                    </li>
+                    {% endif %}
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
