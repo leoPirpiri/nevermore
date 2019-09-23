@@ -29,6 +29,16 @@ def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     global __tmp_conn, __tmp_cur
     """Obtém e levanta, se necessário, uma conexão ao banco de dados.
     """
+
+    # Caso não esteja usando Flask
+    if not has_request_context():
+        if __tmp_conn is None:
+            import os
+            __tmp_conn = psycopg2.connect(dbname=os.getenv('DBNAME'), user=os.getenv('DBUSER'), password=os.getenv('DBPASS'))
+        if __tmp_cur is None:
+            __tmp_cur = __tmp_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        return __tmp_cur
+    
     def getc(c, p=None, s=current_app.config):
         return s[c] if c in s else p
     
@@ -36,16 +46,8 @@ def get_db(discardPrevious=False) -> psycopg2.extras.DictCursor:
     dbuser = getc('DATABASE_USER', 'postgres')
     dbpass = getc('DATABASE_PASS')
 
-    # Caso não esteja usando Flask
-    if not has_request_context():
-        if __tmp_conn is None:
-            __tmp_conn = psycopg2.connect(dbname=dbname, user=dbuser, password=dbpass)
-        if __tmp_cur is None:
-            __tmp_cur = __tmp_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        return __tmp_cur
-    
     if 'dba' not in g:
-        g.dba = psycopg2.connect(dbname='projbd', user=dbuser, password=dbpass)
+        g.dba = psycopg2.connect(dbname=dbname, user=dbuser, password=dbpass)
     if 'cur' not in g:
         g.cur = g.dba.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
@@ -540,6 +542,14 @@ Atualiza as informações de uma notificação.
 @default_commit_none
 def update_notificacao(r):
     return ('UPDATE notificacao SET ' + __update_dict_to_set(r, 'id_notificacao') + ' WHERE id_notificacao = %(id_notificacao)s', r)
+
+
+'''
+Atualiza as informações de uma opinião.
+'''
+@default_commit_none
+def update_opiniao(r):
+    return ('UPDATE opiniao SET ' + __update_dict_to_set(r, 'id_post') + ' WHERE id_post = %(id_post)s', r)
 
 
 
