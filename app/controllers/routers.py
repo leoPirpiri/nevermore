@@ -101,7 +101,9 @@ def json_adiciona_comentario():
 
 @app.route("/desopinar", methods=("GET", "POST"))
 def json_remove_post():
-    retorno = {}
+    p=Post(request.form.get("post", None))
+    p.excluir()
+    retorno = {'ret': 'ALGUMACOISA'}
     #retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)
 

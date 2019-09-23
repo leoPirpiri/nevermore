@@ -9,7 +9,9 @@ $(document).ready(function() {
             $.post("/desopinar", {
                     post: post_id
                 }, function(msg){
-
+                    if(msg != undefined){
+                        $('#post_div'+id_post).hide()
+                    }
                 })
         }
 	});
