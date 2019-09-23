@@ -3,6 +3,16 @@ $(document).ready(function() {
 		$('html, body').animate({scrollTop:0}, 'slow');
 		return false;
 	});
+	$('.btn_rm').click(function(){
+        id_post=this.value
+        if (confirm("Press a button!")){
+            $.post("/desopinar", {
+                    post: post_id
+                }, function(msg){
+
+                })
+        }
+	});
 	$('.ctpost').keydown(function(event) {
         if (event.keyCode == 13 && !event.shiftKey) {
             var content = this.value.trim()

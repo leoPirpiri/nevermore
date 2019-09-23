@@ -64,6 +64,7 @@ def register():
         fullname = request.form.get("input_signup_name", None)
         username = request.form.get("input_signup_user", None)
         password = request.form.get("input_signup_senha", None)
+        visibilidade = request.form.get("input_signup_visibilidade", None)
         error = None
 
         if not username:
@@ -74,7 +75,7 @@ def register():
             error = "User {0} is already registered.".format(username)
 
         if error is None:
-            u=users.registrar_usuario({'nome_usuario': username, 'nome_real': fullname, 'senha': password, 'visibilidade': True})
+            u=users.registrar_usuario({'nome_usuario': username, 'nome_real': fullname, 'senha': password, 'visibilidade': visibilidade})
             session["user_id"] = u.id_usuario()
             return redirect(url_for("home"))
 

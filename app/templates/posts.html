@@ -1,5 +1,5 @@
 {% for pt in posts %}
-<div class="post">
+<div id="post_div{{ pt.id_post() }}" class="post">
     <div class="row px-3 pt-3">
         <div class="pic-thumbnail mx-2">
             <img class="img-fluid"
@@ -8,9 +8,11 @@
         </div>
         <div align="left">
             <h4>{{ pt.get_dono().nome_real() }}</h4>
-            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou... </h6>
+            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou...</h6>
+
         </div>
     </div>
+     <button id="btn_rm{{ pt.id_post() }}" value="{{ pt.id_post() }}" class="btn btn-sm btn-warning float-right btn_rm" title="Remover publicação!"><i class="fa fa-trash" aria-hidden="true"></i></button>
     <hr>
     <div class="post-content">
         <p>{{ pt.texto() }}</p>

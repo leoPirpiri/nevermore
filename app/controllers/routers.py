@@ -58,6 +58,13 @@ def perfil():
                            assuntos = opinion.buscar_trend_topics()
                         )
 
+@app.route("/comunidade/")
+@login_required
+def comunidade():
+    return render_template("comunidade.html",
+                           assuntos = opinion.buscar_trend_topics()
+                        )
+
 
 @app.route("/post/")
 @login_required
@@ -85,9 +92,15 @@ def foto_perfil_atualizar():
  
 
 @app.route("/comentar", methods=("GET", "POST"))
-def json_c():
+def json_adiciona_comentario():
     retorno = _opinar()
     retorno['data_post'] = formatDate(retorno['data_post'])
+    return jsonify(retorno)
+
+@app.route("/desopinar", methods=("GET", "POST"))
+def json_remove_post():
+    retorno = {}
+    #retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)
 
 
