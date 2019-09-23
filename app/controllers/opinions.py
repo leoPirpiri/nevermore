@@ -1,6 +1,7 @@
 import re
 import os
 import random
+import cgi, cgitb
 
 from flask import request, url_for, redirect, g
 
@@ -62,7 +63,6 @@ def _opinar():
                 from app.models.comment import criar_comentario
                 from app.models.post import Post
                 r = criar_comentario(texto, foto, user, Post(int(post)), marcados=_marcados, topicos=_topicos)
-            
-            return redirect(rurl + str(r.id_post()))
-
+            #terna o post que acabou de ser gravado no BD
+            return (r.to_dict())
     return ""

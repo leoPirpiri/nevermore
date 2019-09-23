@@ -1,5 +1,4 @@
-from flask import g, request, redirect, url_for, send_from_directory, render_template as rendert
-
+from flask import g, request, redirect, url_for, send_from_directory, render_template as rendert, jsonify
 from app import app
 
 from app.auth import login_required, logout_required, usuario_logado
@@ -11,15 +10,15 @@ from app.models import user
 from app.controllers.opinions import _opinar, _obter_foto
 from app.models import opinion
 
-from functools import wraps
+from app.controllers.dateToDate import formatDate
 
+from functools import wraps
 
 def render_template(*args, **kwargs):
     if usuario_logado():
         return rendert(logged_user = g.user, notificacoes = get_notificacoes_usuario(g.user), *args, **kwargs)
     else:
         return rendert(*args, **kwargs)
-
 
 @app.route("/index/")
 @app.route("/")
@@ -63,7 +62,6 @@ def opinar():
     return _opinar()
 
 
-
 @app.route("/foto_perfil_atualizar", methods=("GET", "POST"))
 @login_required
 def foto_perfil_atualizar():
@@ -75,6 +73,14 @@ def foto_perfil_atualizar():
             return "SUCESS"
     return "INVALID OPERATION"
  
+
+@app.route("/comentar", methods=("GET", "POST"))
+def json_c():
+    retorno = _opinar()
+    retorno['data_post'] = formatDate(retorno['data_post'])
+    return jsonify(retorno)
+
+
 @app.route("/foto_perfil/<nome_usuario>")
 def foto_perfil(nome_usuario, id_usuario=None):
     if not nome_usuario is None:

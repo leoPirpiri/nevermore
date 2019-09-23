@@ -151,6 +151,13 @@ div.post.user div.row div span.seguidores {
   border: none;
 }
 
+.comentario {
+    border: 1px solid #210054
+}
+
+.flexiva {
+    display: flex;
+  
 .image-upload > input {
   display: none;
 }
