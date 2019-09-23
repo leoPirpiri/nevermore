@@ -30,6 +30,7 @@ CREATE TABLE opiniao (
     dono INTEGER NOT NULL,
     data_post TIMESTAMP,
     comentario BOOLEAN NOT NULL,
+    excluido BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (dono) REFERENCES usuario(id_usuario)
 );
 

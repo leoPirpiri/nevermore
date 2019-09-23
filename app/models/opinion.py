@@ -13,7 +13,7 @@ from datetime import datetime
 class Opinion(Base):
     def __init__(self, id_post=None, *args, **kwargs):
         self.id_post = id_post
-        self.texto = self.foto = self.dono = self.data_post = Stub()
+        self.texto = self.foto = self.dono = self.data_post = self.excluido = Stub()
         super().__init__(pk='id_post', *args, **kwargs)
     
     def get_dono(self):
@@ -24,6 +24,38 @@ class Opinion(Base):
                 from .user import User as Usuario
             self.__tmp_dono = Usuario(self.dono())
         return self.__tmp_dono
+    
+    def visivel_para(self, alvo):
+        ''' Retorna True se o post é visível para o usuário alvo.
+        'alvo' é do tipo User.
+        '''
+        if self.excluido():
+            return False
+        
+        if alvo.id_usuario() == self.get_dono().id_usuario():
+            return True
+
+        try:
+            from app.models.user import Relacionamento
+        except:
+            from .user import Relacionamento
+        
+        relacao = alvo.get_relacionamento(self.get_dono())
+
+        if relacao is Relacionamento.BLOQUEADO or relacao is Relacionamento.BLOQUEOU:
+            return False
+        
+        if not self.get_dono().visibilidade() and not relacao is Relacionamento.SEGUINDO:
+            return False
+
+        return True
+    
+    def visivel_para_mim(self):
+        ''' Retorna True se o post é visível para o usuário alvo.
+        Usa uma rotina do Flask (i.e. um método controller-dependent)
+        '''
+        from flask import g
+        return self.visivel_para(g.user)
 
 
 def __criar_topico(nome_topico):
