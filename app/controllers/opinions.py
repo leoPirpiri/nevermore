@@ -44,11 +44,7 @@ def _opinar():
         if texto is None or len(texto) > 500:
             return "Invalid length."
 
-        if tipo == "POST" or tipo == "COMMENT":
-            rurl = url_for("post")
-            if rurl[-1] != '/':
-                rurl += '/'
-            
+        if tipo == "POST" or tipo == "COMMENT":            
             from app.models.user import get_user
             _topicos  = set(i[1:] for i in re.findall('#\w+', texto))
             _marcados = [get_user(i[1:]) for i in set(re.findall('@\w+', texto))]
@@ -64,5 +60,5 @@ def _opinar():
                 from app.models.post import Post
                 r = criar_comentario(texto, foto, user, Post(int(post)), marcados=_marcados, topicos=_topicos)
             #terna o post que acabou de ser gravado no BD
-            return (r.to_dict())
+            return r
     return ""

@@ -70,7 +70,8 @@ def post(id_post):
 @login_required
 def opinar():
     """Permite ao usuário emitir uma opinião"""
-    return _opinar()
+    p = _opinar()
+    return redirect(url_for('post', id_post=p.id_post()))
 
 
 @app.route("/foto_perfil_atualizar", methods=("GET", "POST"))
@@ -87,7 +88,7 @@ def foto_perfil_atualizar():
 
 @app.route("/comentar", methods=("GET", "POST"))
 def json_c():
-    retorno = _opinar()
+    retorno = _opinar().to_dict()
     retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)
 
