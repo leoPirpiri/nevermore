@@ -25,7 +25,9 @@ class Notification(Base):
 
     def marcar_lida(self):
         self._set('lida', True)
-        db_wrapper.update_notificacao(self.to_dict())
+        d = self.to_dict()
+        d['lida'] = True
+        db_wrapper.update_notificacao(d)
     
     def get_dono(self):
         try:

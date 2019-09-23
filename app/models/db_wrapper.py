@@ -544,6 +544,14 @@ def update_notificacao(r):
     return ('UPDATE notificacao SET ' + __update_dict_to_set(r, 'id_notificacao') + ' WHERE id_notificacao = %(id_notificacao)s', r)
 
 
+'''
+Atualiza as informações de uma opinião.
+'''
+@default_commit_none
+def update_opiniao(r):
+    return ('UPDATE opiniao SET ' + __update_dict_to_set(r, 'id_post') + ' WHERE id_post = %(id_post)s', r)
+
+
 
 
 

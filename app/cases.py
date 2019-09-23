@@ -24,7 +24,10 @@ def usercase_0():
 
     leandro.set_relacionamento(wilson, user.Relacionamento.BLOQUEADO)
 
-    datenow = dt.now() - timedelta(seconds=1)
+    dtn = dt.now()
+    datenow = dtn - timedelta(seconds=2)
+    post.criar_post("TO BE DELETED!!!", "nooo.jpg", vk, data=datenow, topicos=['delete'])
+    datenow = dtn - timedelta(seconds=1)
     post.criar_post("WIIILSOOOON!!!", "wilson.jpg", vk, data=datenow, topicos=['bff'])
     p = post.criar_post("Bora #terminar isso logo. @leandro", "", vk, marcados=[leandro], topicos=['terminar'])
 
@@ -45,6 +48,8 @@ def usercase_1():
     leandro = user.User(nome_usuario='leandro')
     assert vk.get_relacionamento(leandro) == user.Relacionamento.SEGUINDO
     ps = vk.get_postagens()
+    assert len(ps) == 3
+    ps[2].excluir()
     assert ps[1].texto() == "WIIILSOOOON!!!"
     assert "terminar" in ps[0].texto()
     c = ps[0].get_comentarios()

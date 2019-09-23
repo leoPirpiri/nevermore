@@ -24,7 +24,13 @@ class Opinion(Base):
                 from .user import User as Usuario
             self.__tmp_dono = Usuario(self.dono())
         return self.__tmp_dono
-        
+
+    def excluir(self):
+        self._set('excluido', True)
+        d = self.to_dict()
+        d['excluido'] = True
+        db_wrapper.update_opiniao(d)
+
     def visivel_para(self, alvo):
         ''' Retorna True se o post é visível para o usuário alvo.
         'alvo' é do tipo User.
