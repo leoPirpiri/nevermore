@@ -157,4 +157,41 @@ div.post.user div.row div span.seguidores {
 
 .flexiva {
     display: flex;
+  
+.image-upload > input {
+  display: none;
+}
+
+.image-upload > label {
+  position: relative;
+}
+
+.image-upload img {
+  cursor: pointer;
+}
+
+.image-upload .imgupldh {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  background: linear-gradient(#0006, black);
+  height: 100%;
+  font-size: 1.5em;
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .3s ease-out;
+  -moz-transition: opacity .3s ease-out;
+  -webkit-transition: opacity .3s ease-out;
+  -o-transition: opacity .3s ease-out;
+}
+
+.image-upload .imgupldh:hover {
+  opacity: 1;
+}
+
+.image-upload .imgupldh div {
+  position: absolute;
+  width: 100%;
+  bottom: 25px;
 }

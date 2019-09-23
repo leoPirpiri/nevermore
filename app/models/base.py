@@ -50,6 +50,7 @@ class Base:
         # i.e., deixar consistente com as outras colunas.
         self.__update_fields(dict([(n, self.__get(n, False)) for n in self.pk_names]))
         self._set = self.__set
+        self._update_fields = self.__update_fields
         
         # Inicializador de instância
         if 'instancia' in kwargs:
