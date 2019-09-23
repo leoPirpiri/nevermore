@@ -33,12 +33,13 @@ def usercase_0():
 
     notification.criar_notificacao_post(leandro, p)
     notification.criar_notificacao_usuario(vk, teste, notification.NotificationType.ACEITA_SOLICITACAO)
-    notification.criar_notificacao_usuario(vk, wilson, notification.NotificationType.NOVO_SEGUIDOR)
+    n = notification.criar_notificacao_usuario(vk, wilson, notification.NotificationType.NOVO_SEGUIDOR)
+    n.marcar_lida()
 
 
 
 def usercase_1():
-    #usercase_0()
+    usercase_0()
 
     vk = user.User(nome_usuario='vk')
     leandro = user.User(nome_usuario='leandro')
@@ -49,5 +50,6 @@ def usercase_1():
     c = ps[0].get_comentarios()
     assert len(c) == 1
     assert "vou" in c[0].texto()
+    assert 1 == sum(1 if i.lida() else 0 for i in notification.get_notificacoes_usuario(vk))
 
 usercase_1()

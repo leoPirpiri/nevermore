@@ -24,7 +24,7 @@ class Notification(Base):
         return db_wrapper.get_notificao_pk(self.id_notificacao())
 
     def marcar_lida(self):
-        self.__set('lida', True)
+        self._set('lida', True)
         db_wrapper.update_notificacao(self.to_dict())
     
     def get_dono(self):
@@ -54,7 +54,7 @@ class Notification(Base):
 
 
 def __criar_notif(d: dict, *args, **kwargs) -> Notification:
-    du = {'lida': True, 'data_evento': datetime.now(), 'mencionado': None, 'conteudo': None}
+    du = {'lida': False, 'data_evento': datetime.now(), 'mencionado': None, 'conteudo': None}
     du.update(d)
     du.update(kwargs)
     return Notification(db_wrapper.inserir_notificacao(du)[0])
@@ -79,7 +79,7 @@ def criar_notificacao_post(dono, conteudo, *args, **kwargs) -> Notification:
     return __criar_notif(d, *args, **kwargs)
 
 
-def get_notificacoes_usuario(dono):
+def get_notificacoes_usuario(dono) -> [Notification]:
     ''' Obtém as notificações de um usuário.
     '''
     return db_wrapper.get_notificacoes_usuario_pk(dono.id_usuario(), autowrap=Notification)
