@@ -115,6 +115,11 @@ class Base:
         for k, v in fielddict.items():
             self.__set(k, v)
     
+    def e_valido(self):
+        ''' Testa se uma instância é válida, de forma muito estúpida.
+        '''
+        return not self._default_query(None) is None
+    
     '''
     Função auxiliar opcional.
     Dado um dicionário de stubs->valor, atualiza a classe.

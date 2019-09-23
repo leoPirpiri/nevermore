@@ -1,8 +1,8 @@
-from flask import g, request, redirect, url_for, send_from_directory, render_template as rendert, jsonify
+from flask import g, request, redirect, url_for, send_from_directory, render_template as rendert, jsonify, abort
 from app import app
 
 from app.auth import login_required, logout_required, usuario_logado
-from app.models.post import get_timeline
+from app.models.post import get_timeline, Post
 from app.models.opinion import buscar_opinioes_por_topico
 from app.models.notification import get_notificacoes_usuario
 from app.models import user
@@ -16,7 +16,7 @@ from functools import wraps
 
 def render_template(*args, **kwargs):
     if usuario_logado():
-        return rendert(logged_user = g.user, notificacoes = get_notificacoes_usuario(g.user), *args, **kwargs)
+        return rendert(logged_user = g.user, notificacoes = get_notificacoes_usuario(g.user), assuntos = opinion.buscar_trend_topics(), *args, **kwargs)
     else:
         return rendert(*args, **kwargs)
 
@@ -31,8 +31,7 @@ def index():
 def home():
     return render_template("home.html",
                             posts=get_timeline(g.user),
-                            opinar_form=True,
-                            assuntos = opinion.buscar_trend_topics()
+                            opinar_form=True
                             )
 
 
@@ -44,7 +43,7 @@ def busca():
         if termo is None or len(termo) == 0:
             return redirect(url_for('index'))
         elif termo[0] == '#':
-            return render_template("home.html", posts=buscar_opinioes_por_topico(termo[1:]), termo=termo, assuntos = opinion.buscar_trend_topics())
+            return render_template("home.html", posts=buscar_opinioes_por_topico(termo[1:]), termo=termo)
         else:
             return render_template("usuarios.html", usuarios=user.buscar_usuarios_por_string(termo), termo=termo)
     return redirect(url_for('index'))
@@ -55,14 +54,16 @@ def perfil():
     return render_template("perfil.html",
                            posts=g.user.get_postagens(),
                            opinar_form=True,
-                           assuntos = opinion.buscar_trend_topics()
                         )
 
 
-@app.route("/post/")
+@app.route("/post/<id_post>")
 @login_required
-def post():
-    return render_template("perfil.html")
+def post(id_post):
+    p = Post(id_post)
+    if not p.e_valido():
+        abort(404)
+    return render_template("home.html", posts=[p])
 
 
 @app.route("/opinar", methods=("GET", "POST"))
