@@ -1,4 +1,6 @@
 {% for pt in posts %}
+
+{% if pt.visivel_para_mim() %}
 <div id="post_div{{ pt.id_post() }}" class="post">
     <div class="row px-3 pt-3">
         <div class="pic-thumbnail mx-2">
@@ -56,4 +58,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endfor %}

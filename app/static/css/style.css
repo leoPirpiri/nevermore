@@ -157,6 +157,7 @@ div.post.user div.row div span.seguidores {
 
 .flexiva {
     display: flex;
+}
   
 .image-upload > input {
   display: none;
