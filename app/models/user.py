@@ -80,7 +80,7 @@ class User(Base):
             d['cont_seguidores'] = len(self.get_seguidores())
         d['id_usuario'] = self.id_usuario()
         db_wrapper.update_usuario(d)
-        self._update_fields(_default_query(None))
+        self._update_fields(self._default_query(None))
     
     def e_valido(self):
         ''' Método boilerplate para verificar se uma instância é válida.
