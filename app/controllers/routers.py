@@ -124,12 +124,14 @@ def foto_perfil_atualizar():
  
 
 @app.route("/comentar", methods=("GET", "POST"))
+@login_required
 def json_adiciona_comentario():
     retorno = _opinar().to_dict()
     retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)
 
 @app.route("/desopinar", methods=("GET", "POST"))
+@login_required
 def json_remove_post():
     p=Post(request.form.get("post", None))
     p.excluir()
@@ -138,6 +140,7 @@ def json_remove_post():
     return jsonify(retorno)
 
 @app.route("/descomentar", methods=("GET", "POST"))
+@login_required
 def json_remove_coment():
     p=Post(request.form.get("post", None))
     p.excluir()
@@ -146,6 +149,7 @@ def json_remove_coment():
     return jsonify(retorno)
 
 @app.route("/atualizarbio", methods=("GET", "POST"))
+@login_required
 def json_atualizar_biografia():
     bio = request.form.get("biografia", None)
     g.user.atualizar_dados_usuario({'biografia': bio})
@@ -155,6 +159,7 @@ def json_atualizar_biografia():
 
 
 @app.route("/foto_perfil/<nome_usuario>")
+@login_required
 def foto_perfil(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
@@ -175,6 +180,7 @@ def foto_perfil(nome_usuario, id_usuario=None):
 
 
 @app.route("/de_seguir/<nome_usuario>")
+@login_required
 def de_seguir(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
@@ -196,6 +202,7 @@ def de_seguir(nome_usuario, id_usuario=None):
 
 
 @app.route("/aceitar/<nome_usuario>")
+@login_required
 def aceitar(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
@@ -212,6 +219,7 @@ def aceitar(nome_usuario, id_usuario=None):
 
 
 @app.route("/de_bloquear/<nome_usuario>")
+@login_required
 def de_bloquear(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
