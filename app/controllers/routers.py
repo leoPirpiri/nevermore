@@ -241,7 +241,7 @@ def de_bloquear(nome_usuario, id_usuario=None):
     return redirect(url_for('index'))
 
 
-@app.route("/marcarlida/")
+@app.route("/marcarlida/", methods=("GET", "POST"))
 @login_required
 def marcarlida():
     for n in notification.get_notificacoes_usuario(g.user):

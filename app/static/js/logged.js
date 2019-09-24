@@ -50,6 +50,10 @@ $(document).ready(function() {
             })
         }
 	});
+	$('#notificationread').click(function(){
+        $('.notificacao.lida-False').removeClass('lida-False').addClass('lida-True');
+        $.post("/marcarlida/", { }, function(msg){ });
+	});
 	$('.ctpost').keydown(function(event) {
         if (event.keyCode == 13 && !event.shiftKey) {
             var content = this.value.trim()

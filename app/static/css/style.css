@@ -197,6 +197,6 @@ div.post.user div.row div span.seguidores {
   bottom: 25px;
 }
 
-.notificacao.lida-False a {
+.notificacao.lida-True a {
   color: gray;
 }

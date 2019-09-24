@@ -94,7 +94,7 @@ class User(Base):
             rargs = (Relacionamento.SEGUINDO, NotifType.NOVO_SEGUIDOR)
         else:
             rargs = (Relacionamento.SOLICITOU, NotifType.NOVA_SOLICITACAO)
-        solicitante._set_relacionamento(self, rargs[0], rold=rold)
+        solicitante._set_relacionamento(self, rargs[0])
         criar_notificacao_usuario(self, solicitante, rargs[1])
         return rargs[0]
     
