@@ -12,24 +12,28 @@
                         <hr>
                         {% if seguidores %}
                         {% for seg in seguidores %}
-                        <div class="row px-3 pt-3">
-                            <div class="pic-thumbnail mx-2">
-                                <img class="img-fluid"
-                                     src="{{ url_for('foto_perfil', nome_usuario='user') }}"
-                                     alt="Foto do usuário">
+                        <div>
+                            <div class="row px-3 pt-3">
+                                <div class="pic-thumbnail mx-2">
+                                    <img class="img-fluid"
+                                        src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                        alt="Foto do usuário">
+                                </div>
+                                <div align="left">
+                                    <h4><a href="/usuario/{{ seg.nome_usuario() }}">{{ seg.nome_real() }}</a></h4>
+                                    <h6>@{{ seg.nome_usuario() }}</h6>
+                                </div>
+                                <div class="float-right">
+                                    <button id="btn_seg_back{{ seg.id_usuario() }}" value="{{ seg.id_usuario() }}"
+                                            class="btn btn-sm btn-warning btn_seg_back"
+                                            title="Seguir de volta!">
+                                        <i class="fa fa-hand-lizard-o"
+                                                                        aria-hidden="true"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div align="left">
-                                <h4><a href="/usuario/{{ seg.nome_usuario() }}">{{ seg.nome_real() }}</a></h4>
-                                <h6>@{{ seg.nome_usuario() }}</h6>
-                            </div>
-                            <div class="float-right">
-                                <button id="btn_seg_back{{ seg.id_usuario() }}" value="{{ seg.id_usuario() }}"
-                                        class="btn btn-sm btn-warning btn_seg_back"
-                                        title="Seguir de volta!">
-                                    <i class="fa fa-hand-lizard-o"
-                                                                       aria-hidden="true"></i>
-                                </button>
-                            </div>
+                            {% set u = seg %}
+                            {% include 'simple_buttons.html' %}
                         </div>
                         {% endfor%}
                         {% else %}

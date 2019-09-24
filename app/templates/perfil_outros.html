@@ -22,7 +22,8 @@
                                 class="fa fa-cogs" aria-hidden="true"></i></button>
                         {{ outro.nome_real()}}
                     </h4>
-                    <h6>@{{ outro.nome_usuario() }}</h6>
+                    {% set u = outro %}
+                    <h6>@{{ outro.nome_usuario() }}, {% include 'simple_buttons.html' %}</h6>
                 </div>
                 <div align="left">
                     <ol class="list-group">
