@@ -11,10 +11,12 @@
         <div align="left">
             <h4>{{ pt.get_dono().nome_real() }}</h4>
             <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou...</h6>
-
         </div>
     </div>
-     <button id="btn_rm{{ pt.id_post() }}" value="{{ pt.id_post() }}" class="btn btn-sm btn-warning float-right btn_rm" title="Remover publicação!"><i class="fa fa-trash" aria-hidden="true"></i></button>
+    {% if logged_user.id_usuario() == pt.get_dono().id_usuario() %}
+    <button id="btn_rm{{ pt.id_post() }}" value="{{ pt.id_post() }}" class="btn btn-sm btn-warning float-right btn_rm"
+            title="Remover publicação!"><i class="fa fa-trash" aria-hidden="true"></i></button>
+    {% endif %}
     <hr>
     <div class="post-content">
         <p>{{ pt.texto() }}</p>
@@ -32,6 +34,29 @@
                  data-parent="#accordion_coment{{ pt.id_post() }}">
                 <div class="card-body">
                     <div id="comentarios{{ pt.id_post() }}" align="right">
+                        {% if pt.get_comentarios() %}
+                        {% for com in pt.get_comentarios() %}
+                        {% if com.visivel_para_mim() %}
+                        <div id="com_div{{ com.id_post() }}" class='comentario row my-1 py-1'>
+                            <div class='pic-thumbnail col-2'>
+                                <img class='img-fluid' src="{{ url_for('foto_perfil', nome_usuario=com.get_dono().nome_usuario()) }}" alt='Foto do usuário'>
+                            </div>
+                            <div class='col-9' align='left'>
+                                <p class='my-0' title='Comentou às {{ com.data_post().strftime("%H:%M em %d/%m/%Y") }}'>
+                                    <a style='font-weight: bold' href='/perfil/'>@{{ com.get_dono().nome_usuario() }}</a>
+                                    {{ com.texto() }}
+                                </p>
+                            </div>
+                            <div class='col-1' align='right'>
+                                {% if (logged_user.id_usuario() == pt.get_dono().id_usuario()) or (logged_user.id_usuario() == com.get_dono().id_usuario()) %}
+                                <button id="btn_rm_com{{ com.id_post() }}" value="{{ com.id_post() }}" class="btn btn-sm btn-warning btn_rm_com"
+                                        title="Remover comentario!"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
                     </div>
                     <div class="row">
                         <div class="col-4 p-0">

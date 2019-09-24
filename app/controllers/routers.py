@@ -54,14 +54,14 @@ def perfil():
     return render_template("perfil.html",
                            posts=g.user.get_postagens(),
                            opinar_form=True,
+                           num_seguindo = len(g.user.get_seguindo()),
+                           num_seguidores = len(g.user.get_seguidores())
                         )
 
 @app.route("/comunidade/")
 @login_required
 def comunidade():
-    return render_template("comunidade.html",
-                           assuntos = opinion.buscar_trend_topics()
-                        )
+    return render_template("comunidade.html")
 
 
 @app.route("/post/<id_post>")
@@ -103,6 +103,22 @@ def json_adiciona_comentario():
 def json_remove_post():
     p=Post(request.form.get("post", None))
     p.excluir()
+    retorno = {'ret': 'ALGUMACOISA'}
+    #retorno['data_post'] = formatDate(retorno['data_post'])
+    return jsonify(retorno)
+
+@app.route("/descomentar", methods=("GET", "POST"))
+def json_remove_coment():
+    p=Post(request.form.get("post", None))
+    p.excluir()
+    retorno = {'ret': 'ALGUMACOISA'}
+    #retorno['data_post'] = formatDate(retorno['data_post'])
+    return jsonify(retorno)
+
+@app.route("/atualizarbio", methods=("GET", "POST"))
+def json_atualizar_biografia():
+    bio = request.form.get("biografia", None)
+    g.user.atualizar_dados_usuario({'biografia': bio})
     retorno = {'ret': 'ALGUMACOISA'}
     #retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)

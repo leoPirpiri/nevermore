@@ -3,16 +3,51 @@ $(document).ready(function() {
 		$('html, body').animate({scrollTop:0}, 'slow');
 		return false;
 	});
+	$('#user_config').click(function(){
+	    $('#user_bio').prop("disabled", false);
+	    $('#user_bio').focus();
+	});
+	$('#user_bio').keydown(function(event) {
+        if (event.keyCode == 13 && !event.shiftKey) {
+            var content = this.value.trim()
+            if (content!=''){
+                if (confirm("Deseja atualizar o texto de sua biografia? :)")){
+                    $.post("/atualizarbio", {
+                        biografia: content
+                    }, function(msg){
+                        if(msg != undefined){
+                            $('#user_bio').prop("disabled", true);
+                        }
+                    })
+
+                }
+            }
+        }else if(event.keyCode == 27){
+            $('#user_bio').prop("disabled", true);
+        }
+    });
 	$('.btn_rm').click(function(){
         id_post=this.value
-        if (confirm("Press a button!")){
+        if (confirm("Deseja mesmo excluir essa postagem? :(")){
             $.post("/desopinar", {
-                    post: post_id
-                }, function(msg){
-                    if(msg != undefined){
-                        $('#post_div'+id_post).hide()
-                    }
-                })
+                post: id_post
+            }, function(msg){
+                if(msg != undefined){
+                    $('#post_div'+id_post).hide()
+                }
+            })
+        }
+	});
+	$('.btn_rm_com').click(function(){
+        id_post=this.value
+        if (confirm("Deseja mesmo excluir seu comentario? :(")){
+            $.post("/descomentar", {
+                post: id_post
+            }, function(msg){
+                if(msg != undefined){
+                    $('#com_div'+id_post).fadeOut()
+                }
+            })
         }
 	});
 	$('.ctpost').keydown(function(event) {
