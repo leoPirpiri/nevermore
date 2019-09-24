@@ -16,7 +16,20 @@ from functools import wraps
 
 def render_template(*args, **kwargs):
     if usuario_logado():
-        return rendert(logged_user = g.user, notificacoes = get_notificacoes_usuario(g.user), assuntos = opinion.buscar_trend_topics(), *args, **kwargs)
+        default_kwargs = {
+            "logged_user": g.user,
+            "notificacoes": ('proxy', get_notificacoes_usuario, [g.user], {}),
+            "assuntos": ('proxy', opinion.buscar_trend_topics),
+            "formatDate": formatDate
+        }
+        default_kwargs.update(kwargs)
+        for k, v in default_kwargs.items():
+            if isinstance(v, tuple) and v[0] == 'proxy':
+                if len(v) == 4:
+                    default_kwargs[k] = v[1](*v[2], **v[3])
+                else:
+                    default_kwargs[k] = v[1]()
+        return rendert(*args, **default_kwargs)
     else:
         return rendert(*args, **kwargs)
 
@@ -58,6 +71,21 @@ def perfil():
                            num_seguidores = len(g.user.get_seguidores())
                         )
 
+@app.route("/usuario/<nome_usuario>")
+@login_required
+def usuario(nome_usuario):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    return render_template("perfil.html",
+                           posts=u.get_postagens()
+                        )
+
 @app.route("/comunidade/")
 @login_required
 def comunidade():
@@ -70,6 +98,8 @@ def post(id_post):
     p = Post(id_post)
     if not p.e_valido():
         abort(404)
+    elif p.comentario():
+        return redirect(url_for('post', id_post=p.get_postagem().id_post()))
     return render_template("home.html", posts=[p])
 
 
@@ -135,8 +165,31 @@ def foto_perfil(nome_usuario, id_usuario=None):
 
     from os import path
     basedir = app.config['IMAGES_USERS_ABS']
-    vpath = path.join(basedir, u.foto())
-    if not u is None and u.e_valido() and u.foto() and path.exists(vpath):
+    if not u is None and u.e_valido() and u.foto() and path.exists(path.join(basedir, u.foto())):
         return send_from_directory(basedir, u.foto())
 
     return send_from_directory(app.static_folder, 'images_app/default-user.png')
+
+
+
+ 
+
+@app.route("/de_seguir/<nome_usuario>")
+def de_seguir(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    rel = g.user.get_relacionamento(u)
+    if rel is user.Relacionamento.NONE:
+        u.solicitar_seguir(g.user)
+    elif rel is user.Relacionamento.SEGUINDO or rel is user.Relacionamento.SOLICITOU:
+        u._set_relacionamento(g.user, user.Relacionamento.NONE)
+    
+    return redirect(url_for('usuario', nome_usuario=nome_usuario))

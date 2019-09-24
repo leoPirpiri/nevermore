@@ -1,11 +1,13 @@
 try:
     from app.models.base import Base, Stub
     from app.models.post import Post as Postagem
+    from app.models.notification import criar_notificacao_usuario, NotificationType as NotifType
     from app.models import db_wrapper
     #from app.models.db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
 except:
     from .base import Base, Stub
     from .post import Post as Postagem
+    from .notification import Notification
     from . import db_wrapper
     #from .db_wrapper import get_usuario_pk, get_usuario_nome_usuario, get_postagens_usuario_pk, get_seguindo_usuario_pk, get_seguidores_usuario_pk, get_bloqueados_usuario_pk, get_relacao_usuario_pk, update_usuario, update_relacao_usuario, inserir_relacao, inserir_usuario, get_usuarios_busca
 
@@ -58,18 +60,66 @@ class User(Base):
         r = db_wrapper.get_relacao_usuario_pk(self.id_usuario(), usuario_alvo.id_usuario())
         return Relacionamento.NONE if r is None else Relacionamento(r['tipo'])
     
-    def set_relacionamento(self, usuario_alvo: 'User', relacao: Relacionamento):
+    def _set_relacionamento(self, usuario_alvo: 'User', relacao: Relacionamento, rold=None):
         ''' Atualiza o relacionamento entre os usuários.
         Atualiza também o contador de seguidores:
         Isto é, se o novo ou o anterior relacionamento for do tipo seguindo, o contador é atualizado.
         (A atualização é completa, para garantir a integridade do banco de dados).
         '''
-        r = self.get_relacionamento(usuario_alvo)
-        opr = db_wrapper.inserir_relacao if r == Relacionamento.NONE else db_wrapper.update_relacao_usuario
+        rold = rold or self.get_relacionamento(usuario_alvo)
+        opr = db_wrapper.inserir_relacao if rold == Relacionamento.NONE else db_wrapper.update_relacao_usuario
         opr({'tipo': relacao.value, 'origem': self.id_usuario(), 'alvo': usuario_alvo.id_usuario()})
         
-        if r == Relacionamento.SEGUINDO or relacao == Relacionamento.SEGUINDO:
+        if rold == Relacionamento.SEGUINDO or relacao == Relacionamento.SEGUINDO:
             self.atualizar_dados_usuario(upd_cont_seguidores=True)
+    
+    def solicitar_seguir(self, solicitante: 'User') -> Relacionamento:
+        ''' Solicita este usuário para o seguir (como solicitante).
+        Retorna o novo relacionamento (tipo user.Relacionamento).
+        Isto é, se a solicitação foi aceita automaticamente (perfil público), ou está para ser aprovada.
+        Envia as notificações necessárias.
+        '''
+        rold = solicitante.get_relacionamento(self)
+
+        # Não faz nada se eles não tem relacionamento
+        if not rold is Relacionamento.NONE:
+            return rold
+        
+        # perfil público
+        if self.visibilidade():
+            rargs = (Relacionamento.SEGUINDO, NotifType.NOVO_SEGUIDOR)
+        else:
+            rargs = (Relacionamento.SOLICITOU, NotifType.NOVA_SOLICITACAO)
+        solicitante._set_relacionamento(self, rargs[0], rold=rold)
+        criar_notificacao_usuario(self, solicitante, rargs[1])
+        return rargs[0]
+    
+    def bloquear(self, bloqueante: 'User') -> Relacionamento:
+        ''' O bloqueante (tipo User) bloqueia este usuário.
+        Retorna o antigo relacionamento que este usuário tinha com bloqueante.
+        (Isto é, para saber se o alvo do bloqueio tbm tinha bloqueado o infeliz).
+        '''
+        bloqueante._set_relacionamento(self, Relacionamento.BLOQUEOU)
+        rold = self.get_relacionamento(bloqueante)
+        if not rold is Relacionamento.BLOQUEOU:
+            self._set_relacionamento(bloqueante, Relacionamento.BLOQUEADO)
+        return rold
+    
+    def desbloquear(self, desbloqueante: 'User') -> Relacionamento:
+        ''' O desbloqueante (tipo User) desbloqueia este usuário.
+        Retorna o relacionamento que este usuário passará a ter com desbloqueante:
+        Isto é, se este usuário também bloqueou o bloqueante, retorna BLOQUEOU.
+        Senão, retorna NONE.
+        '''
+        rold = self.get_relacionamento(desbloqueante)
+        if rold is Relacionamento.BLOQUEOU:
+            desbloqueante._set_relacionamento(self, Relacionamento.BLOQUEADO)
+            #self._set_relacionamento(desbloqueante, Relacionamento.BLOQUEOU)
+            return Relacionamento.BLOQUEOU
+        else:
+            desbloqueante._set_relacionamento(self, Relacionamento.NONE)
+            self._set_relacionamento(desbloqueante, Relacionamento.NONE)
+            return Relacionamento.NONE
 
     def atualizar_dados_usuario(self, dados:dict = None, upd_cont_seguidores=True):
         ''' Atualize os dados do usuário por meio da classe ou passando dados: dict como argumento.
@@ -112,3 +162,10 @@ def buscar_usuarios_por_string(occur):
     ''' Busca uma lista de usuário que possuem a string de ocorrência na biografia, nome ou nome completo.
     '''
     return db_wrapper.get_usuarios_busca(occur, autowrap=User)
+
+def aceitar_solicitacao(pedinte: User, alvo: User):
+    ''' Se houver uma solicitação de seguimento de pedinte para alvo, então aceita-a.
+    Avisa ao usuário pedinte que sua solicitação foi aceita.
+    '''
+    pedinte._set_relacionamento(alvo, Relacionamento.SEGUINDO)
+    criar_notificacao_usuario(pedinte, alvo, NotifType.ACEITA_SOLICITACAO)

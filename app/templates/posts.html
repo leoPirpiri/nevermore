@@ -10,7 +10,7 @@
         </div>
         <div align="left">
             <h4>{{ pt.get_dono().nome_real() }}</h4>
-            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ pt.data_post() }} demonstrou...</h6>
+            <h6>@{{ pt.get_dono().nome_usuario() }} às {{ formatDate(pt.data_post()) }} demonstrou...</h6>
         </div>
     </div>
     {% if logged_user.id_usuario() == pt.get_dono().id_usuario() %}

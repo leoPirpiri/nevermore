@@ -74,10 +74,12 @@ def criar_notificacao_usuario(dono, mencionado, tipo: NotificationType, *args, *
 def criar_notificacao_post(dono, conteudo, *args, **kwargs) -> Notification:
     ''' Cria uma notificação relacionada a um post (isto é, uma marcação).
     'dono' (da notificação) é do tipo User.
-    'conteudo' é do tipo Opinion.
+    'conteudo' é do tipo Opinion (ou int).
     Parâmetros adicionais podem ser especificado, como mencionado, tipo, data e lida.
     '''
-    d = { 'dono_notificacao': dono.id_usuario(), 'conteudo': conteudo.id_post(), 'tipo': NotificationType.MARCACAO_POST.value }
+    if not isinstance(conteudo, int):
+        conteudo = conteudo.id_post()
+    d = { 'dono_notificacao': dono.id_usuario(), 'conteudo': conteudo, 'tipo': NotificationType.MARCACAO_POST.value }
     return __criar_notif(d, *args, **kwargs)
 
 
