@@ -16,13 +16,13 @@ def usercase_0():
     wilson = user.registrar_usuario({'nome_usuario': 'wilson', 'nome_real': 'Wilson', 'biografia': 'BFF ever',
                               'senha': 'numsei', 'foto': 'também numsei', 'visibilidade': True})
     
-    vk.set_relacionamento(wilson, user.Relacionamento.SEGUINDO)
-    vk.set_relacionamento(teste, user.Relacionamento.SEGUINDO)
-    vk.set_relacionamento(leandro, user.Relacionamento.SEGUINDO)
-    teste.set_relacionamento(leandro, user.Relacionamento.SEGUINDO)
-    leandro.set_relacionamento(vk, user.Relacionamento.SEGUINDO)
+    vk._set_relacionamento(wilson, user.Relacionamento.SEGUINDO)
+    vk._set_relacionamento(teste, user.Relacionamento.SEGUINDO)
+    vk._set_relacionamento(leandro, user.Relacionamento.SEGUINDO)
+    teste._set_relacionamento(leandro, user.Relacionamento.SEGUINDO)
+    leandro._set_relacionamento(vk, user.Relacionamento.SEGUINDO)
 
-    leandro.set_relacionamento(wilson, user.Relacionamento.BLOQUEADO)
+    leandro._set_relacionamento(wilson, user.Relacionamento.BLOQUEADO)
 
     dtn = dt.now()
     datenow = dtn - timedelta(seconds=2)

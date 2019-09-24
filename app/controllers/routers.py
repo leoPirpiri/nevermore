@@ -16,12 +16,20 @@ from functools import wraps
 
 def render_template(*args, **kwargs):
     if usuario_logado():
-        return rendert(
-            logged_user = g.user,
-            notificacoes = get_notificacoes_usuario(g.user),
-            assuntos = opinion.buscar_trend_topics(),
-            formatDate=formatDate,
-            *args, **kwargs)
+        default_kwargs = {
+            "logged_user": g.user,
+            "notificacoes": ('proxy', get_notificacoes_usuario, [g.user], {}),
+            "assuntos": ('proxy', opinion.buscar_trend_topics),
+            "formatDate": formatDate
+        }
+        default_kwargs.update(kwargs)
+        for k, v in default_kwargs.items():
+            if isinstance(v, tuple) and v[0] == 'proxy':
+                if len(v) == 4:
+                    default_kwargs[k] = v[1](*v[2], **v[3])
+                else:
+                    default_kwargs[k] = v[1]()
+        return rendert(*args, **default_kwargs)
     else:
         return rendert(*args, **kwargs)
 
@@ -75,6 +83,8 @@ def post(id_post):
     p = Post(id_post)
     if not p.e_valido():
         abort(404)
+    elif p.comentario():
+        return redirect(url_for('post', id_post=p.get_postagem().id_post()))
     return render_template("home.html", posts=[p])
 
 
@@ -124,8 +134,7 @@ def foto_perfil(nome_usuario, id_usuario=None):
 
     from os import path
     basedir = app.config['IMAGES_USERS_ABS']
-    vpath = path.join(basedir, u.foto())
-    if not u is None and u.e_valido() and u.foto() and path.exists(vpath):
+    if not u is None and u.e_valido() and u.foto() and path.exists(path.join(basedir, u.foto())):
         return send_from_directory(basedir, u.foto())
 
     return send_from_directory(app.static_folder, 'images_app/default-user.png')

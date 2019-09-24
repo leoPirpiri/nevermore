@@ -1,6 +1,7 @@
 try:
     from app.models.base import Base, Stub
     from app.models import db_wrapper
+    from app.models.notification import criar_notificacao_post
     #from app.models.db_wrapper import inserir_citacao, inserir_marcacao, inserir_topico, get_topico_pk, get_opinioes_topico_pk
 except:
     from . import Base, Stub
@@ -13,7 +14,7 @@ from datetime import datetime
 class Opinion(Base):
     def __init__(self, id_post=None, *args, **kwargs):
         self.id_post = id_post
-        self.texto = self.foto = self.dono = self.data_post = self.excluido = Stub()
+        self.texto = self.foto = self.dono = self.data_post = self.excluido = self.comentario = Stub()
         super().__init__(pk='id_post', *args, **kwargs)
     
     def get_dono(self):
@@ -76,10 +77,11 @@ def _criar_opiniao(dados: dict, funcdb, marcados=[], topicos=[]) -> int:
 
     for marc in marcados:
         db_wrapper.inserir_marcacao({'id_post': p, 'id_usuario': marc.id_usuario()})
+        criar_notificacao_post(marc, p)
     for top in topicos:
         __criar_topico(top)
         db_wrapper.inserir_citacao({'id_post': p, 'nome_topico': top})
-
+        
     return p
 
 def __comment_post_wrapper(instancia={}):
