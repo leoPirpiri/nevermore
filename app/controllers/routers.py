@@ -4,7 +4,7 @@ from app import app
 from app.auth import login_required, logout_required, usuario_logado
 from app.models.post import get_timeline, Post
 from app.models.opinion import buscar_opinioes_por_topico
-from app.models.notification import get_notificacoes_usuario
+from app.models import notification
 from app.models import user
 
 from app.controllers.opinions import _opinar, _obter_foto
@@ -18,7 +18,7 @@ def render_template(*args, **kwargs):
     if usuario_logado():
         default_kwargs = {
             "logged_user": g.user,
-            "notificacoes": ('proxy', get_notificacoes_usuario, [g.user], {}),
+            "notificacoes": ('proxy', notification.get_notificacoes_usuario, [g.user], {}),
             "assuntos": ('proxy', opinion.buscar_trend_topics),
             "formatDate": formatDate
         }
@@ -128,12 +128,14 @@ def foto_perfil_atualizar():
  
 
 @app.route("/comentar", methods=("GET", "POST"))
+@login_required
 def json_adiciona_comentario():
     retorno = _opinar().to_dict()
     retorno['data_post'] = formatDate(retorno['data_post'])
     return jsonify(retorno)
 
 @app.route("/desopinar", methods=("GET", "POST"))
+@login_required
 def json_remove_post():
     p=Post(request.form.get("post", None))
     p.excluir()
@@ -142,6 +144,7 @@ def json_remove_post():
     return jsonify(retorno)
 
 @app.route("/descomentar", methods=("GET", "POST"))
+@login_required
 def json_remove_coment():
     p=Post(request.form.get("post", None))
     p.excluir()
@@ -150,6 +153,7 @@ def json_remove_coment():
     return jsonify(retorno)
 
 @app.route("/atualizarbio", methods=("GET", "POST"))
+@login_required
 def json_atualizar_biografia():
     bio = request.form.get("biografia", None)
     g.user.atualizar_dados_usuario({'biografia': bio})
@@ -159,6 +163,7 @@ def json_atualizar_biografia():
 
 
 @app.route("/foto_perfil/<nome_usuario>")
+@login_required
 def foto_perfil(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
@@ -176,9 +181,10 @@ def foto_perfil(nome_usuario, id_usuario=None):
 
 
 
- 
+
 
 @app.route("/de_seguir/<nome_usuario>")
+@login_required
 def de_seguir(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
         u = user.get_user(nome_usuario)
@@ -197,3 +203,51 @@ def de_seguir(nome_usuario, id_usuario=None):
         u._set_relacionamento(g.user, user.Relacionamento.NONE)
     
     return redirect(url_for('usuario', nome_usuario=nome_usuario))
+
+
+@app.route("/aceitar/<nome_usuario>")
+@login_required
+def aceitar(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    user.aceitar_solicitacao(u, g.user)
+    return redirect(url_for('usuario', nome_usuario=nome_usuario))
+
+
+@app.route("/de_bloquear/<nome_usuario>")
+@login_required
+def de_bloquear(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    rel = g.user.get_relacionamento(u)
+    if rel is user.Relacionamento.BLOQUEOU:
+        u.desbloquear(g.user)
+        return redirect(url_for('usuario', nome_usuario=nome_usuario))
+    else:
+        u.bloquear(g.user)
+    
+    return redirect(url_for('index'))
+
+
+@app.route("/marcarlida/", methods=("GET", "POST"))
+@login_required
+def marcarlida():
+    for n in notification.get_notificacoes_usuario(g.user):
+        n.marcar_lida()
+    return ""

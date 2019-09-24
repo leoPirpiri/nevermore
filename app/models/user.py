@@ -54,20 +54,24 @@ class User(Base):
     def get_bloqueados(self):
         return db_wrapper.get_bloqueados_usuario_pk(self.id_usuario(), autowrap=User)
     
-    def get_relacionamento(self, usuario_alvo: 'User') -> Relacionamento:
+    def __existe_relacionamento(self, usuario_alvo: 'User'):
+        return db_wrapper.get_relacao_usuario_pk(self.id_usuario(), usuario_alvo.id_usuario())
+    
+    def get_relacionamento(self, usuario_alvo: 'User', r=None) -> Relacionamento:
         ''' Obtém uma instância de Relacionamento
         '''
-        r = db_wrapper.get_relacao_usuario_pk(self.id_usuario(), usuario_alvo.id_usuario())
+        r = r or self.__existe_relacionamento(usuario_alvo)
         return Relacionamento.NONE if r is None else Relacionamento(r['tipo'])
     
-    def _set_relacionamento(self, usuario_alvo: 'User', relacao: Relacionamento, rold=None):
+    def _set_relacionamento(self, usuario_alvo: 'User', relacao: Relacionamento):
         ''' Atualiza o relacionamento entre os usuários.
         Atualiza também o contador de seguidores:
         Isto é, se o novo ou o anterior relacionamento for do tipo seguindo, o contador é atualizado.
         (A atualização é completa, para garantir a integridade do banco de dados).
         '''
-        rold = rold or self.get_relacionamento(usuario_alvo)
-        opr = db_wrapper.inserir_relacao if rold == Relacionamento.NONE else db_wrapper.update_relacao_usuario
+        rold = self.__existe_relacionamento(usuario_alvo)
+        opr = db_wrapper.inserir_relacao if rold is None else db_wrapper.update_relacao_usuario
+        rold = self.get_relacionamento(usuario_alvo, rold)
         opr({'tipo': relacao.value, 'origem': self.id_usuario(), 'alvo': usuario_alvo.id_usuario()})
         
         if rold == Relacionamento.SEGUINDO or relacao == Relacionamento.SEGUINDO:
@@ -90,7 +94,7 @@ class User(Base):
             rargs = (Relacionamento.SEGUINDO, NotifType.NOVO_SEGUIDOR)
         else:
             rargs = (Relacionamento.SOLICITOU, NotifType.NOVA_SOLICITACAO)
-        solicitante._set_relacionamento(self, rargs[0], rold=rold)
+        solicitante._set_relacionamento(self, rargs[0])
         criar_notificacao_usuario(self, solicitante, rargs[1])
         return rargs[0]
     
@@ -167,5 +171,6 @@ def aceitar_solicitacao(pedinte: User, alvo: User):
     ''' Se houver uma solicitação de seguimento de pedinte para alvo, então aceita-a.
     Avisa ao usuário pedinte que sua solicitação foi aceita.
     '''
-    pedinte._set_relacionamento(alvo, Relacionamento.SEGUINDO)
-    criar_notificacao_usuario(pedinte, alvo, NotifType.ACEITA_SOLICITACAO)
+    if pedinte.get_relacionamento(alvo) is Relacionamento.SOLICITOU:
+        pedinte._set_relacionamento(alvo, Relacionamento.SEGUINDO)
+        criar_notificacao_usuario(pedinte, alvo, NotifType.ACEITA_SOLICITACAO)
