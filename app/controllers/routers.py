@@ -4,7 +4,7 @@ from app import app
 from app.auth import login_required, logout_required, usuario_logado
 from app.models.post import get_timeline, Post
 from app.models.opinion import buscar_opinioes_por_topico
-from app.models.notification import get_notificacoes_usuario
+from app.models import notification
 from app.models import user
 
 from app.controllers.opinions import _opinar, _obter_foto
@@ -18,7 +18,7 @@ def render_template(*args, **kwargs):
     if usuario_logado():
         default_kwargs = {
             "logged_user": g.user,
-            "notificacoes": ('proxy', get_notificacoes_usuario, [g.user], {}),
+            "notificacoes": ('proxy', notification.get_notificacoes_usuario, [g.user], {}),
             "assuntos": ('proxy', opinion.buscar_trend_topics),
             "formatDate": formatDate
         }
@@ -239,3 +239,11 @@ def de_bloquear(nome_usuario, id_usuario=None):
         u.bloquear(g.user)
     
     return redirect(url_for('index'))
+
+
+@app.route("/marcarlida/")
+@login_required
+def marcarlida():
+    for n in notification.get_notificacoes_usuario(g.user):
+        n.marcar_lida()
+    return ""

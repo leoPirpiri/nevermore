@@ -15,7 +15,7 @@
                 <div id="notificacoes">
                     
                     {% for n in notificacoes %}
-                    <div class="notificacao">
+                    <div class="notificacao lida-{{ n.lida() }}">
                         {% if n.tipo() == 0 %}
                         <a href="/perfil/{{ n.get_mencionado().nome_usuario() }}">@{{ n.get_mencionado().nome_usuario() }} deseja seguir seu perfil</a>
                         {% elif n.tipo() == 1 %}
@@ -29,8 +29,8 @@
                     {% endfor %}
 
                 </div>
-                <button type="button" class="btn btn-info" title="Ver todas as notificações" >
-                    Todas notificações
+                <button type="button" class="btn btn-info" title="Marca todas as notificações como lidas" >
+                    Marcar como lida
                 </button>
             </div>
         </div>
