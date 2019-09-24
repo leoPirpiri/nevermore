@@ -172,7 +172,7 @@ def foto_perfil(nome_usuario, id_usuario=None):
 
 
 
- 
+
 
 @app.route("/de_seguir/<nome_usuario>")
 def de_seguir(nome_usuario, id_usuario=None):
@@ -193,3 +193,25 @@ def de_seguir(nome_usuario, id_usuario=None):
         u._set_relacionamento(g.user, user.Relacionamento.NONE)
     
     return redirect(url_for('usuario', nome_usuario=nome_usuario))
+
+
+@app.route("/de_bloquear/<nome_usuario>")
+def de_bloquear(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    rel = g.user.get_relacionamento(u)
+    if rel is user.Relacionamento.BLOQUEOU:
+        u.desbloquear(g.user)
+        return redirect(url_for('usuario', nome_usuario=nome_usuario))
+    else:
+        u.bloquear(g.user)
+    
+    return redirect(url_for('index'))
