@@ -93,6 +93,33 @@ class User(Base):
         solicitante._set_relacionamento(self, rargs[0], rold=rold)
         criar_notificacao_usuario(self, solicitante, rargs[1])
         return rargs[0]
+    
+    def bloquear(self, bloqueante: 'User') -> Relacionamento:
+        ''' O bloqueante (tipo User) bloqueia este usuário.
+        Retorna o antigo relacionamento que este usuário tinha com bloqueante.
+        (Isto é, para saber se o alvo do bloqueio tbm tinha bloqueado o infeliz).
+        '''
+        bloqueante._set_relacionamento(self, Relacionamento.BLOQUEOU)
+        rold = self.get_relacionamento(bloqueante)
+        if not rold is Relacionamento.BLOQUEOU:
+            self._set_relacionamento(bloqueante, Relacionamento.BLOQUEADO)
+        return rold
+    
+    def desbloquear(self, desbloqueante: 'User') -> Relacionamento:
+        ''' O desbloqueante (tipo User) desbloqueia este usuário.
+        Retorna o relacionamento que este usuário passará a ter com desbloqueante:
+        Isto é, se este usuário também bloqueou o bloqueante, retorna BLOQUEOU.
+        Senão, retorna NONE.
+        '''
+        rold = self.get_relacionamento(desbloqueante)
+        if rold is Relacionamento.BLOQUEOU:
+            desbloqueante._set_relacionamento(self, Relacionamento.BLOQUEADO)
+            #self._set_relacionamento(desbloqueante, Relacionamento.BLOQUEOU)
+            return Relacionamento.BLOQUEOU
+        else:
+            desbloqueante._set_relacionamento(self, Relacionamento.NONE)
+            self._set_relacionamento(desbloqueante, Relacionamento.NONE)
+            return Relacionamento.NONE
 
     def atualizar_dados_usuario(self, dados:dict = None, upd_cont_seguidores=True):
         ''' Atualize os dados do usuário por meio da classe ou passando dados: dict como argumento.
