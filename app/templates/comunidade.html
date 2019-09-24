@@ -12,15 +12,13 @@
                         <hr>
                         {% if seguidores %}
                         {% for seg in seguidores %}
-                        <div class="row px-3 pt-3">
-                            <dib class="col-3 px-0">
+                        <div>
+                            <div class="row px-3 pt-3">
                                 <div class="pic-thumbnail mx-2">
                                     <img class="img-fluid"
-                                         src="{{ url_for('foto_perfil', nome_usuario='user') }}"
-                                         alt="Foto do usuário">
+                                        src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                        alt="Foto do usuário">
                                 </div>
-                            </dib>
-                            <div class="col-9 px-0">
                                 <div align="left">
                                     <h5><a href="/usuario/{{ seg.nome_usuario() }}">{{ seg.nome_real() }}</a></h5>
                                     <h6>@{{ seg.nome_usuario() }}</h6>
@@ -29,8 +27,7 @@
                                     <button id="btn_seg_back{{ seg.id_usuario() }}" value="{{ seg.id_usuario() }}"
                                             class="btn btn-sm btn-warning btn_seg_back"
                                             title="Seguir de volta!">
-                                        <i class="fa fa-hand-lizard-o"
-                                           aria-hidden="true"></i>
+                                        <i class="fa fa-hand-lizard-o" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </div>
@@ -68,6 +65,8 @@
                             <div class="float-right">
                                 <!-- o botao de des_seguir aqui-->
                             </div>
+                            {% set u = seg %}
+                            {% include 'simple_buttons.html' %}
                         </div>
                         {% endfor%}
                         {% else %}
@@ -117,25 +116,8 @@
 
             {% include 'notifications.html' %}
 
-            <h2>Assuntos do momento</h2>
-            <hr>
-            <div id="trends" align="left">
-                <ol class="list-group">
-                    {% if assuntos %}
-                    {% for trends in assuntos%}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #{{ trends.nome }}
-                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
-                    </li>
-                    {% endfor %}
-                    {% else %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #Sem momentos
-                        <span class="badge badge-gothic badge-pill">00000</span>
-                    </li>
-                    {% endif %}
-                </ol>
-            </div>
+            {% include 'trends.html' %}
+
         </div>
     </div>
 </div>

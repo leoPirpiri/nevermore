@@ -22,7 +22,8 @@
                                 class="fa fa-cogs" aria-hidden="true"></i></button>
                         {{ outro.nome_real()}}
                     </h4>
-                    <h6>@{{ outro.nome_usuario() }}</h6>
+                    {% set u = outro %}
+                    <h6>@{{ outro.nome_usuario() }}, {% include 'simple_buttons.html' %}</h6>
                 </div>
                 <div align="left">
                     <ol class="list-group">
@@ -44,25 +45,9 @@
                 </div>
             </div>
             <hr>
-            <h2>Assuntos do momento</h2>
-            <hr>
-            <div id="trends" align="left">
-                <ol class="list-group">
-                    {% if assuntos %}
-                    {% for trends in assuntos%}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #{{ trends.nome }}
-                        <span class="badge badge-gothic badge-pill"> {{ trends.quan }} </span>
-                    </li>
-                    {% endfor %}
-                    {% else %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        #Sem momentos
-                        <span class="badge badge-gothic badge-pill">00000</span>
-                    </li>
-                    {% endif %}
-                </ol>
-            </div>
+
+            {% include 'trends.html' %}
+
         </div>
         <div class="col-lg-8 col-12">
             {% if opinar_form %}
