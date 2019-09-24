@@ -82,14 +82,18 @@ def usuario(nome_usuario):
     if u is None or not u.e_valido():
         return abort(404)
     
-    return render_template("perfil.html",
-                           posts=u.get_postagens()
+    return render_template("perfil_outros.html",
+                           posts=u.get_postagens(),
+                           outro = u,
+                           num_seguindo = len(u.get_seguindo()),
+                           num_seguidores = len(u.get_seguidores())
                         )
 
 @app.route("/comunidade/")
 @login_required
 def comunidade():
-    return render_template("comunidade.html")
+    return render_template("comunidade.html", seguidores = g.user.get_seguidores(), seguindo = g.user.get_seguindo(),
+     bloqueados=g.user.get_bloqueados())
 
 
 @app.route("/post/<id_post>")

@@ -1,37 +1,37 @@
 {% extends "header_home.html" %}
 {% block conteudo %}
-<div id="content_perfil" class="container bg-white py-5" align="center">
+<div id="content_perfil_outros" class="container bg-white py-5" align="center">
     <div class="row">
         <div class="col-lg-4 col-12">
             <div id="infors_perfil">
-                <form id="form-input-img" method="POST" enctype=multipart/form-data>
+                <div id="form-input-img">
                     <div class="image-upload">
-                        <label for="foto">
-                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}" alt="Foto do usuário">
-                            <div class="imgupldh"><div>Clique para atualizar</div></div>
-                        </label>
+                        <div id="foto">
+                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=outro.nome_usuario()) }}" alt="Foto do usuário">
+
+                        </div>
                     
-                        <input id="foto" name="foto" accept="image/png, image/jpeg, image/jpg, image/gif" type="file"/>
+
                     </div>
-                    <script type="text/javascript" src="{{ url_for('static', filename='js/photo.js') }}"></script>
-                </form>
+
+                </div>
 
                 <div align="left">
                     <h4>
                         <button type="button" class="btn" id="user_config" title="Alterar algumas informações" for><i
                                 class="fa fa-cogs" aria-hidden="true"></i></button>
-                        {{ logged_user.nome_real()}}
+                        {{ outro.nome_real()}}
                     </h4>
-                    <h6>@{{ logged_user.nome_usuario() }}</h6>
+                    <h6>@{{ outro.nome_usuario() }}</h6>
                 </div>
                 <div align="left">
                     <ol class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="/comunidade" title="Ver todos!"><i class="fa fa-users" aria-hidden="true"></i> Número de seguindo</a>
+                            <i class="fa fa-users" aria-hidden="true"></i>Número de seguindo
                             <span class="badge badge-gothic badge-pill"> {{ num_seguindo }} </span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="/comunidade" title="Ver todos!"><i class="fa fa-grav" aria-hidden="true"></i> Número de seguidores</a>
+                            <i class="fa fa-grav" aria-hidden="true"></i>Número de seguidores
                             <span class="badge badge-gothic badge-pill"> {{ num_seguidores }} </span>
                         </li>
                     </ol>
@@ -40,7 +40,7 @@
                     <br>
                     <textarea id="user_bio" class="form-control" style="resize:none;"
                               placeholder="A biografia do usuário visivel aqui"
-                              disabled="disabled">{{ logged_user.biografia() }}</textarea>
+                              disabled="disabled">{{ outro.biografia() }}</textarea>
                 </div>
             </div>
             <hr>
@@ -70,7 +70,7 @@
                 <div id="post" class="row">
                     <div class="col-2 p-0">
                         <div class="pic-thumbnail">
-                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=logged_user.nome_usuario()) }}"
+                            <img class="img-fluid" src="{{ url_for('foto_perfil', nome_usuario=outro.nome_usuario()) }}"
                                 alt="Foto do usuário">
                         </div>
                     </div>
