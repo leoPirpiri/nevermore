@@ -20,17 +20,50 @@
                                         alt="Foto do usuário">
                                 </div>
                                 <div align="left">
-                                    <h4><a href="/usuario/{{ seg.nome_usuario() }}">{{ seg.nome_real() }}</a></h4>
+                                    <h5><a href="/usuario/{{ seg.nome_usuario() }}">{{ seg.nome_real() }}</a></h5>
                                     <h6>@{{ seg.nome_usuario() }}</h6>
                                 </div>
                                 <div class="float-right">
                                     <button id="btn_seg_back{{ seg.id_usuario() }}" value="{{ seg.id_usuario() }}"
                                             class="btn btn-sm btn-warning btn_seg_back"
                                             title="Seguir de volta!">
-                                        <i class="fa fa-hand-lizard-o"
-                                                                        aria-hidden="true"></i>
+                                        <i class="fa fa-hand-lizard-o" aria-hidden="true"></i>
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                        {% endfor%}
+                        {% else %}
+                        <div class="row px-3 pt-3">
+                            <div class="pic-thumbnail mx-2">
+                                <img class="img-fluid"
+                                     src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                     alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h5><a href="/perfil/">Wilson Ball</a></h5>
+                                <h6>@wilson</h6>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                        <h4>Seguindo</h4>
+                        <hr>
+                        {% if seguindo %}
+                        {% for seging in seguindo %}
+                        <div class="row px-3 pt-3">
+                            <div class="pic-thumbnail mx-2">
+                                <img class="img-fluid"
+                                     src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                     alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h5><a href="/usuario/{{ seging.nome_usuario() }}">{{ seging.nome_real() }}</a></h5>
+                                <h6>@{{ seging.nome_usuario() }}</h6>
+                            </div>
+                            <div class="float-right">
+                                <!-- o botao de des_seguir aqui-->
                             </div>
                             {% set u = seg %}
                             {% include 'simple_buttons.html' %}
@@ -44,19 +77,37 @@
                                      alt="Foto do usuário">
                             </div>
                             <div align="left">
-                                <h4><a href="/perfil/">Wilson Ball</a></h4>
+                                <h5><a href="/perfil/">Wilson Ball - Voce nao segue ninguem :(</a></h5>
                                 <h6>@wilson</h6>
                             </div>
                         </div>
                         {% endif %}
                     </div>
                     <div class="col-12 col-sm-12 col-md-4 col-lg-4">
-                        <h4>Seguindo</h4>
-                        <hr>
-                    </div>
-                    <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                         <h4>Bloqueados</h4>
                         <hr>
+                        {% if bloqueados %}
+                        {% for blc in seguidores %}
+                        <div class="row px-3 pt-3">
+                            <div class="pic-thumbnail mx-2">
+                                <img class="img-fluid"
+                                     src="{{ url_for('foto_perfil', nome_usuario='user') }}"
+                                     alt="Foto do usuário">
+                            </div>
+                            <div align="left">
+                                <h5><a href="/usuario/{{ blc.nome_usuario() }}">{{ blc.nome_real() }}</a></h5>
+                                <h6>@{{ blc.nome_usuario() }}</h6>
+                            </div>
+                            <div class="float-right">
+                                <!-- o botao de desblock aqui-->
+                            </div>
+                        </div>
+                        {% endfor%}
+                        {% else %}
+                        <div class="row px-3 pt-3">
+                            Voce nao tem usuarios bloqueados
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
