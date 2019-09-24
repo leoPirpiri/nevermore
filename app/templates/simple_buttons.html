@@ -1,0 +1,7 @@
+{% set relu = logged_user.get_relacionamento(u).value %}
+{% if relu == 2 %}
+<a href="/de_bloquear/{{ u.nome_usuario() }}">Desbloquear</a>
+{% else %}
+{% set whataction = 'Deixar de seguir' if relu == 0 or relu == 1 else 'Seguir' %}
+<a href="/de_seguir/{{ u.nome_usuario() }}">{{ whataction }}</a>, <a href="/de_bloquear/{{ u.nome_usuario() }}">Bloquear</a>
+{% endif %}

@@ -171,5 +171,6 @@ def aceitar_solicitacao(pedinte: User, alvo: User):
     ''' Se houver uma solicitação de seguimento de pedinte para alvo, então aceita-a.
     Avisa ao usuário pedinte que sua solicitação foi aceita.
     '''
-    pedinte._set_relacionamento(alvo, Relacionamento.SEGUINDO)
-    criar_notificacao_usuario(pedinte, alvo, NotifType.ACEITA_SOLICITACAO)
+    if pedinte.get_relacionamento(alvo) is Relacionamento.SOLICITOU:
+        pedinte._set_relacionamento(alvo, Relacionamento.SEGUINDO)
+        criar_notificacao_usuario(pedinte, alvo, NotifType.ACEITA_SOLICITACAO)

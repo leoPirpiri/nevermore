@@ -195,6 +195,22 @@ def de_seguir(nome_usuario, id_usuario=None):
     return redirect(url_for('usuario', nome_usuario=nome_usuario))
 
 
+@app.route("/aceitar/<nome_usuario>")
+def aceitar(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    user.aceitar_solicitacao(u, g.user)
+    return redirect(url_for('usuario', nome_usuario=nome_usuario))
+
+
 @app.route("/de_bloquear/<nome_usuario>")
 def de_bloquear(nome_usuario, id_usuario=None):
     if not nome_usuario is None:
