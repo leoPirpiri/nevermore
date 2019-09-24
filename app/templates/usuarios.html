@@ -50,7 +50,13 @@
                             </div>
                             <div align="left">
                                 <h4>{{ u.nome_real() }}</h4>
-                                <h6>@{{ u.nome_usuario() }}</h6>
+                                {% set relu = logged_user.get_relacionamento(u).value %}
+                                {% if relu == 2 %}
+                                <h6>@{{ u.nome_usuario() }}, <a href="/de_bloquear/{{ u.nome_usuario() }}">Desbloquear</a></h6>
+                                {% else %}
+                                {% set whataction = 'Deixar de seguir' if relu == 0 or relu == 1 else 'Seguir' %}
+                                <h6>@{{ u.nome_usuario() }}, <a href="/de_seguir/{{ u.nome_usuario() }}">{{ whataction }}</a>, <a href="/de_bloquear/{{ u.nome_usuario() }}">Bloquear</a></h6>
+                                {% endif %}
                                 <span class="seguidores">{{ u.cont_seguidores() }} seguidores; </span>
                                 <span>{{ u.biografia() }}</span>
                             </div>

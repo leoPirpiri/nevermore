@@ -87,9 +87,9 @@ class User(Base):
         
         # perfil público
         if self.visibilidade():
-            rargs = (Relacionamento.SEGUINDO, solicitante, NotifType.NOVO_SEGUIDOR)
+            rargs = (Relacionamento.SEGUINDO, NotifType.NOVO_SEGUIDOR)
         else:
-            rargs = (Relacionamento.SOLICITOU, solicitante, NotifType.NOVA_SOLICITACAO)
+            rargs = (Relacionamento.SOLICITOU, NotifType.NOVA_SOLICITACAO)
         solicitante._set_relacionamento(self, rargs[0], rold=rold)
         criar_notificacao_usuario(self, solicitante, rargs[1])
         return rargs[0]

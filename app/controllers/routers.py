@@ -69,6 +69,21 @@ def perfil():
                            opinar_form=True,
                         )
 
+@app.route("/usuario/<nome_usuario>")
+@login_required
+def usuario(nome_usuario):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    return render_template("perfil.html",
+                           posts=u.get_postagens()
+                        )
+
 @app.route("/comunidade/")
 @login_required
 def comunidade():
@@ -138,3 +153,27 @@ def foto_perfil(nome_usuario, id_usuario=None):
         return send_from_directory(basedir, u.foto())
 
     return send_from_directory(app.static_folder, 'images_app/default-user.png')
+
+
+
+ 
+
+@app.route("/de_seguir/<nome_usuario>")
+def de_seguir(nome_usuario, id_usuario=None):
+    if not nome_usuario is None:
+        u = user.get_user(nome_usuario)
+    elif not id_usuario is None:
+        u = user.User(id_usuario)
+    else:
+        u = None
+    
+    if u is None or not u.e_valido():
+        return abort(404)
+    
+    rel = g.user.get_relacionamento(u)
+    if rel is user.Relacionamento.NONE:
+        u.solicitar_seguir(g.user)
+    elif rel is user.Relacionamento.SEGUINDO or rel is user.Relacionamento.SOLICITOU:
+        u._set_relacionamento(g.user, user.Relacionamento.NONE)
+    
+    return redirect(url_for('usuario', nome_usuario=nome_usuario))
