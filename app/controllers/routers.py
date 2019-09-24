@@ -56,7 +56,11 @@ def busca():
         if termo is None or len(termo) == 0:
             return redirect(url_for('index'))
         elif termo[0] == '#':
-            return render_template("home.html", posts=buscar_opinioes_por_topico(termo[1:]), termo=termo)
+            def topost(p):
+                r = p.get_postagem() if p.comentario() else p
+                return r.id_post(), r
+            d = dict(topost(p) for p in buscar_opinioes_por_topico(termo[1:]))
+            return render_template("home.html", posts=d.values(), termo=termo)
         else:
             return render_template("usuarios.html", usuarios=user.buscar_usuarios_por_string(termo), termo=termo)
     return redirect(url_for('index'))
