@@ -9,7 +9,8 @@
                  alt="Foto do usuário">
         </div>
         <div align="left">
-            <h4>{{ pt.get_dono().nome_real() }}</h4>
+            <h4><a style='font-weight: bold' href='{% if logged_user.id_usuario() == pt.get_dono().id_usuario() %}/perfil/
+            {% else %}/usuario/{{ pt.get_dono().nome_usuario() }}{% endif %}'>{{ pt.get_dono().nome_real() }}</a></h4>
             <h6>@{{ pt.get_dono().nome_usuario() }} às {{ formatDate(pt.data_post()) }} demonstrou...</h6>
         </div>
     </div>
@@ -43,7 +44,7 @@
                             </div>
                             <div class='col-9' align='left'>
                                 <p class='my-0' title='Comentou às {{ com.data_post().strftime("%H:%M em %d/%m/%Y") }}'>
-                                    <a style='font-weight: bold' href='/perfil/'>@{{ com.get_dono().nome_usuario() }}</a>
+                                    <a style='font-weight: bold' href='/usuario/'>@{{ com.get_dono().nome_usuario() }}</a>
                                     {{ com.texto() }}
                                 </p>
                             </div>
